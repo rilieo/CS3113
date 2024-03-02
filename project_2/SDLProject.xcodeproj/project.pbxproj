@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9AAFCC8B2B8DA3860024DD8D /* right-totoro.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AAFCC892B8D94A10024DD8D /* right-totoro.png */; };
-		9AAFCC8C2B8DA3860024DD8D /* left-totoro.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AAFCC8A2B8D94A70024DD8D /* left-totoro.png */; };
+		9A565B912B90635F0020A49C /* right-win.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A565B902B9062240020A49C /* right-win.png */; };
+		9A565B922B90635F0020A49C /* left-win.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9A565B8F2B90621A0020A49C /* left-win.png */; };
+		9AAFCC912B8DBCC10024DD8D /* left-totoro.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AAFCC8D2B8DBCA80024DD8D /* left-totoro.png */; };
+		9AAFCC922B8DBCC10024DD8D /* right-totoro.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AAFCC8E2B8DBCAD0024DD8D /* right-totoro.png */; };
+		9AAFCC942B8DBE3E0024DD8D /* soot.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AAFCC932B8DBE2A0024DD8D /* soot.png */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -26,8 +29,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				9AAFCC8B2B8DA3860024DD8D /* right-totoro.png in CopyFiles */,
-				9AAFCC8C2B8DA3860024DD8D /* left-totoro.png in CopyFiles */,
+				9A565B912B90635F0020A49C /* right-win.png in CopyFiles */,
+				9A565B922B90635F0020A49C /* left-win.png in CopyFiles */,
+				9AAFCC942B8DBE3E0024DD8D /* soot.png in CopyFiles */,
+				9AAFCC912B8DBCC10024DD8D /* left-totoro.png in CopyFiles */,
+				9AAFCC922B8DBCC10024DD8D /* right-totoro.png in CopyFiles */,
 				DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -35,8 +41,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		9AAFCC892B8D94A10024DD8D /* right-totoro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right-totoro.png"; sourceTree = "<group>"; };
-		9AAFCC8A2B8D94A70024DD8D /* left-totoro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left-totoro.png"; sourceTree = "<group>"; };
+		9A565B8F2B90621A0020A49C /* left-win.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left-win.png"; sourceTree = "<group>"; };
+		9A565B902B9062240020A49C /* right-win.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right-win.png"; sourceTree = "<group>"; };
+		9AAFCC8D2B8DBCA80024DD8D /* left-totoro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left-totoro.png"; sourceTree = "<group>"; };
+		9AAFCC8E2B8DBCAD0024DD8D /* right-totoro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right-totoro.png"; sourceTree = "<group>"; };
+		9AAFCC932B8DBE2A0024DD8D /* soot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = soot.png; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -93,8 +102,11 @@
 				DBDF1B5C2323DE8D007CECB1 /* shaders */,
 				DBDF1B5A2323DE8D007CECB1 /* stb_image.h */,
 				DBDF1B522323DE3F007CECB1 /* main.cpp */,
-				9AAFCC892B8D94A10024DD8D /* right-totoro.png */,
-				9AAFCC8A2B8D94A70024DD8D /* left-totoro.png */,
+				9AAFCC8D2B8DBCA80024DD8D /* left-totoro.png */,
+				9AAFCC932B8DBE2A0024DD8D /* soot.png */,
+				9A565B902B9062240020A49C /* right-win.png */,
+				9A565B8F2B90621A0020A49C /* left-win.png */,
+				9AAFCC8E2B8DBCAD0024DD8D /* right-totoro.png */,
 			);
 			path = SDLProject;
 			sourceTree = "<group>";
