@@ -28,11 +28,7 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-    delete[] m_animation_up;
-    delete[] m_animation_down;
-    delete[] m_animation_left;
-    delete[] m_animation_right;
-    delete[] m_walking;
+    delete[] m_animations;
 }
 
 void Entity::draw_sprite_from_texture_atlas(ShaderProgram* program, GLuint texture_id, int index)
@@ -98,9 +94,9 @@ void Entity::ai_walk()
 void Entity::ai_guard(Entity* player)
 {
     switch (m_ai_state) {
-    case IDLE:
-        if (glm::distance(m_position, player->get_position()) < 3.0f) m_ai_state = WALKING;
-        break;
+//    case IDLE:
+//        if (glm::distance(m_position, player->get_position()) < 3.0f) m_ai_state = WALKING;
+//        break;
 
     case WALKING:
         if (m_position.x > player->get_position().x) {
@@ -111,7 +107,9 @@ void Entity::ai_guard(Entity* player)
         }
         break;
 
-    case ATTACKING:
+    case JUMPING:
+            m_is_jumping = true;
+            m_jumping_power =  2.0f;
         break;
 
     default:
@@ -181,7 +179,7 @@ void const Entity::check_collision_y(Entity* collidable_entities, int collidable
     {
         Entity* collidable_entity = &collidable_entities[i];
 
-        if (check_collision(collidable_entity))
+        if (check_collision(collidable_entity, 0))
         {
             float y_distance = fabs(m_position.y - collidable_entity->get_position().y);
             float y_overlap = fabs(y_distance - (m_height / 2.0f) - (collidable_entity->get_height() / 2.0f));
@@ -205,7 +203,7 @@ void const Entity::check_collision_x(Entity* collidable_entities, int collidable
     {
         Entity* collidable_entity = &collidable_entities[i];
 
-        if (check_collision(collidable_entity))
+        if (check_collision(collidable_entity, 0))
         {
             float x_distance = fabs(m_position.x - collidable_entity->get_position().x);
             float x_overlap = fabs(x_distance - (m_width / 2.0f) - (collidable_entity->get_width() / 2.0f));
@@ -334,14 +332,13 @@ void Entity::render(ShaderProgram* program)
 }
 
 
-bool const Entity::check_collision(Entity* other) const
+bool const Entity::check_collision(Entity* other, float extra) const
 {
-    if (other == this) return false;
     // If either entity is inactive, there shouldn't be any collision
     if (!m_is_active || !other->m_is_active) return false;
 
-    float x_distance = fabs(m_position.x - other->m_position.x) - ((m_width + other->m_width) / 2.0f);
-    float y_distance = fabs(m_position.y - other->m_position.y) - ((m_height + other->m_height) / 2.0f);
+    float x_distance = fabs(m_position.x - other->m_position.x) - ((m_width + other->m_width - extra) / 2.0f);
+    float y_distance = fabs(m_position.y - other->m_position.y) - ((m_height + other->m_height - extra) / 2.0f);
 
     return x_distance < 0.0f && y_distance < 0.0f;
 }

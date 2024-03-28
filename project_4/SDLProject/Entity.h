@@ -2,7 +2,7 @@
 
 enum EntityType { PLATFORM, PLAYER, ENEMY   };
 enum AIType     { WALKER, GUARD             };
-enum AIState    { WALKING, IDLE, ATTACKING  };
+enum AIState    { WALKING, JUMPING, ATTACKING  };
 
 class Entity
 {
@@ -10,10 +10,10 @@ private:
     bool m_is_active = true;
 
     // ––––– ANIMATION ––––– //
-    int* m_animation_right = NULL, // move to the right
-        * m_animation_left = NULL, // move to the left
-        * m_animation_up   = NULL, // move upwards
-        * m_animation_down = NULL; // move downwards
+    int* m_animation_walkright = NULL, // move to the right
+       * m_animation_walkleft = NULL, // move to the left
+       * m_animation_attackright = NULL, // attack right
+       * m_animation_attackleft = NULL; // attack left
 
     // ––––– PHYSICS (GRAVITY) ––––– //
     glm::vec3 m_position;
@@ -38,19 +38,18 @@ private:
 public:
     // ————— STATIC VARIABLES ————— //
     static const int    SECONDS_PER_FRAME = 4;
-    static const int    LEFT    = 0,
-                        RIGHT   = 1,
-                        UP      = 2,
-                        DOWN    = 3;
+    static const int    WALK_LEFT    = 0,
+                        WALK_RIGHT   = 1,
+                        ATTACK_LEFT  = 2,
+                        ATTACK_RIGHT = 3;
 
     // ————— ANIMATION ————— //
-    int** m_walking = new int* [4]
-        {
-            m_animation_left,
-            m_animation_right,
-            m_animation_up,
-            m_animation_down
-        };
+    int** m_animations = new int*[4] {
+        m_animation_walkleft,
+        m_animation_walkright,
+        m_animation_attackleft,
+        m_animation_attackright,
+    };
 
     int m_animation_frames  = 0,
         m_animation_index   = 0,
@@ -80,7 +79,7 @@ public:
     void update(float delta_time, Entity* player, Entity* objects, int object_count, Map* map); // Now, update should check for both objects in the game AND the map
     void render(ShaderProgram* program);
 
-    bool const check_collision(Entity* other) const;
+    bool const check_collision(Entity* other, float extra) const;
     void const check_collision_y(Entity* collidable_entities, int collidable_entity_count);
     void const check_collision_x(Entity* collidable_entities, int collidable_entity_count);
 
