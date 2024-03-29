@@ -16,6 +16,7 @@
 #define ENEMY_COUNT 3
 #define LEVEL1_WIDTH 20
 #define LEVEL1_HEIGHT 5
+#define FONTBANK_SIZE 16
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -71,14 +72,16 @@ const float MILLISECONDS_IN_SECOND = 1000.0;
 
 const char  DOG_FILEPATH[] = "assets/images/dog_spritesheet.png",
             MAP_TILESET_FILEPATH[]  = "assets/images/city_tileset/city.png",
-            BG_FILEPATH[] = "assets/images/city_tileset/city_bg.png",
-            ENEMY_FILEPATH[] = "assets/images/enemy_bee_right.png";
-//            BGM_FILEPATH[]          = "assets/audio/dooblydoo.mp3",
-//            JUMP_SFX_FILEPATH[]     = "assets/audio/bounce.wav";
+            ENEMY_FILEPATH[] = "assets/images/enemy_bee_right.png",
+            WIN_FILEPATH[] = "assets/images/win_message.png",
+            LOSE_FILEPATH[] = "assets/images/lose_message.png",
+            BGM_FILEPATH[]          = "assets/audio/k-k-slider.mp3";
 
 const int NUMBER_OF_TEXTURES = 1;
 const GLint LEVEL_OF_DETAIL = 0;
 const GLint TEXTURE_BORDER = 0;
+
+GLuint g_font_texture_id;
 
 unsigned int LEVEL_1_DATA[] =
 {
@@ -115,6 +118,68 @@ float   g_previous_ticks = 0.0f,
 std::set<int> attacked_who;
 
 // ————— GENERAL FUNCTIONS ————— //
+void draw_text(ShaderProgram *program, GLuint font_texture_id, std::string text, float screen_size, float spacing, glm::vec3 position)
+{
+    // Scale the size of the fontbank in the UV-plane
+    // We will use this for spacing and positioning
+    float width = 1.0f / FONTBANK_SIZE;
+    float height = 1.0f / FONTBANK_SIZE;
+
+    // Instead of having a single pair of arrays, we'll have a series of pairs—one for each character
+    // Don't forget to include <vector>!
+    std::vector<float> vertices;
+    std::vector<float> texture_coordinates;
+
+    // For every character...
+    for (int i = 0; i < text.size(); i++) {
+        // 1. Get their index in the spritesheet, as well as their offset (i.e. their position
+        //    relative to the whole sentence)
+        int spritesheet_index = (int) text[i];  // ascii value of character
+        float offset = (screen_size + spacing) * i;
+        
+        // 2. Using the spritesheet index, we can calculate our U- and V-coordinates
+        float u_coordinate = (float) (spritesheet_index % FONTBANK_SIZE) / FONTBANK_SIZE;
+        float v_coordinate = (float) (spritesheet_index / FONTBANK_SIZE) / FONTBANK_SIZE;
+
+        // 3. Inset the current pair in both vectors
+        vertices.insert(vertices.end(), {
+            offset + (-0.5f * screen_size), 0.5f * screen_size,
+            offset + (-0.5f * screen_size), -0.5f * screen_size,
+            offset + (0.5f * screen_size), 0.5f * screen_size,
+            offset + (0.5f * screen_size), -0.5f * screen_size,
+            offset + (0.5f * screen_size), 0.5f * screen_size,
+            offset + (-0.5f * screen_size), -0.5f * screen_size,
+        });
+
+        texture_coordinates.insert(texture_coordinates.end(), {
+            u_coordinate, v_coordinate,
+            u_coordinate, v_coordinate + height,
+            u_coordinate + width, v_coordinate,
+            u_coordinate + width, v_coordinate + height,
+            u_coordinate + width, v_coordinate,
+            u_coordinate, v_coordinate + height,
+        });
+    }
+
+    // 4. And render all of them using the pairs
+    glm::mat4 model_matrix = glm::mat4(1.0f);
+    model_matrix = glm::translate(model_matrix, position);
+    
+    program->set_model_matrix(model_matrix);
+    glUseProgram(program->get_program_id());
+    
+    glVertexAttribPointer(program->get_position_attribute(), 2, GL_FLOAT, false, 0, vertices.data());
+    glEnableVertexAttribArray(program->get_position_attribute());
+    glVertexAttribPointer(program->get_tex_coordinate_attribute(), 2, GL_FLOAT, false, 0, texture_coordinates.data());
+    glEnableVertexAttribArray(program->get_tex_coordinate_attribute());
+    
+    glBindTexture(GL_TEXTURE_2D, font_texture_id);
+    glDrawArrays(GL_TRIANGLES, 0, (int) (text.size() * 6));
+    
+    glDisableVertexAttribArray(program->get_position_attribute());
+    glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
+}
+
 GLuint load_texture(const char* filepath)
 {
     int width, height, number_of_components;
@@ -177,7 +242,7 @@ void initialise()
     g_game_state.bg = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, LEVEL_1_BG, map_texture_id, 1.0f, 8, 9);
     g_game_state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, LEVEL_1_DATA, map_texture_id, 1.0f, 8, 9);
 
-    // ————— GEORGE SET-UP ————— //
+    // ————— SET-UP ————— //
     // Existing
     g_game_state.player = new Entity();
     g_game_state.player->set_entity_type(PLAYER);
@@ -186,19 +251,19 @@ void initialise()
     g_game_state.player->set_speed(2.5f);
     g_game_state.player->set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
     g_game_state.player->m_texture_id = load_texture(DOG_FILEPATH);
-
+    
     // Walking
-    g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT]   = new int[6] {0, 1, 2, 3, 4, 5};
-    g_game_state.player->m_animations[g_game_state.player->WALK_LEFT]  = new int[6] {6, 7, 8, 9, 10, 11};
+    g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT]   = new int[6] {4, 5, 6, 7, 8, 9};
+    g_game_state.player->m_animations[g_game_state.player->WALK_LEFT]  = new int[6] {14, 15, 16, 17, 18, 19};
     // Attacking
-    g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT]   = new int[6] {20, 20, 20, 20, 20, 20};
-    g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]  = new int[6] {13, 13, 13, 13, 13, 13};
+    g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT]  = new int[6] {37, 37, 37, 37, 37, 37};
+    g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]   = new int[6] {24, 24, 24, 24, 24, 24};
 
     g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT];
     g_game_state.player->m_animation_frames  = 6;
     g_game_state.player->m_animation_index   = 0;
     g_game_state.player->m_animation_time    = 0.0f;
-    g_game_state.player->m_animation_cols    = 6;
+    g_game_state.player->m_animation_cols    = 10;
     g_game_state.player->m_animation_rows    = 4;
     g_game_state.player->set_height(0.9f);
     g_game_state.player->set_width(0.9f);
@@ -212,9 +277,10 @@ void initialise()
     g_game_state.enemies = new Entity[ENEMY_COUNT];
     
     g_game_state.enemies->m_animations[g_game_state.enemies->ATTACK_RIGHT] = new int[6] {0, 1, 2, 3, 4};
-    AIState states[] = {WALKING, ATTACKING, JUMPING};
     
-    float positions[] = {2.5f, 8.0f, 15.0f};
+    AIType types[] = {WALKER, GUARD, BOBBER};
+    float positions[] = {2.5f, 8.0f, 16.0f};
+    
     for (int i = 0; i < ENEMY_COUNT; i++) {
         g_game_state.enemies[i].m_animation_indices = g_game_state.enemies->m_animations[g_game_state.enemies->ATTACK_RIGHT];
         g_game_state.enemies[i].m_animation_frames  = 5;
@@ -225,21 +291,28 @@ void initialise()
         g_game_state.enemies[i].set_height(0.9f);
         g_game_state.enemies[i].set_width(0.9f);
         g_game_state.enemies[i].set_entity_type(ENEMY);
-        g_game_state.enemies[i].set_ai_type(GUARD);
-        g_game_state.enemies[i].set_ai_state(states[i]);
+        g_game_state.enemies[i].set_ai_type(types[i]);
+        
+        if (g_game_state.enemies[i].get_ai_type() == GUARD)
+            g_game_state.enemies[i].set_ai_state(IDLE);
+            
         g_game_state.enemies[i].m_texture_id = enemy_texture_id;
         g_game_state.enemies[i].set_position(glm::vec3(positions[i], 0.0f, 0.0f));
         g_game_state.enemies[i].set_movement(glm::vec3(0.0f));
         g_game_state.enemies[i].set_speed(0.5f);
         g_game_state.enemies[i].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
+        
+        if (g_game_state.enemies[i].get_ai_type() == WALKER) g_game_state.enemies[i].set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
     }
     
+    g_font_texture_id = load_texture("assets/fonts/font1.png");
+    
+    //
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 
-//    g_game_state.bgm = Mix_LoadMUS(BGM_FILEPATH);
+    g_game_state.bgm = Mix_LoadMUS(BGM_FILEPATH);
     Mix_PlayMusic(g_game_state.bgm, -1);
     Mix_VolumeMusic(MIX_MAX_VOLUME / 16.0f);
-    Mix_HaltMusic();
 
 //    g_game_state.jump_sfx = Mix_LoadWAV(JUMP_SFX_FILEPATH);
 
@@ -276,13 +349,6 @@ void process_input()
 //                    Mix_PlayChannel(-1, g_game_state.jump_sfx, 0);
                 }
                 break;
-                case SDLK_e:
-                    if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_LEFT]) {
-                        g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT];
-                    }
-                    else if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT]) {
-                        g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT];
-                    }
             default:
                 break;
             }
@@ -303,6 +369,15 @@ void process_input()
     {
         g_game_state.player->move_right();
         g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT];
+    }
+    else if (key_state[SDL_SCANCODE_E])
+    {
+        if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_LEFT]) {
+            g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT];
+        }
+        else if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT]) {
+            g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT];
+        }
     }
 
     // This makes sure that the player can't move faster diagonally
@@ -336,12 +411,15 @@ void update()
     }
     
     for (int i=0; i < ENEMY_COUNT; i++) {
-            if (g_game_state.player->check_collision(&g_game_state.enemies[i], 0.5f)
+            if (g_game_state.player->check_collision(&g_game_state.enemies[i], -0.5)
                 && (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]
                     || g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT])){
                 attacked_who.insert(i);
+                g_game_state.enemies[i].deactivate();
             }
-            else {
+            else if (g_game_state.player->check_collision(&g_game_state.enemies[i], 0)
+                && !(g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]
+                    || g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT])){
                 g_game_lost = true;
             }
         }
@@ -366,18 +444,27 @@ void render()
         if (!attacked_who.count(i)) {
             g_game_state.enemies[i].render(&g_shader_program);
         }
-        
     }
     
-//    if (attacked_who.size() == ENEMY_COUNT) { g_game_won = true; }
+    std::cout << attacked_who.size() << std::endl;
+    if (attacked_who.size() == 3) { g_game_won = true; }
     
+    // display lose message
     if (g_game_lost) {
-        // display lose message
-    } else if (g_game_won) {
-        // display win message
+        glm::vec3 position = g_game_state.player->get_position();
+        draw_text(&g_shader_program, g_font_texture_id, "You lose!", 1.5f, -0.7f, glm::vec3(position.x - 3.0f, position.y + 2.0f, 0.0f));
+    }
+    // display win message
+    else if (g_game_won) {
+        glm::vec3 position = g_game_state.player->get_position();
+        draw_text(&g_shader_program, g_font_texture_id, "You won!", 1.5f, -0.7f, glm::vec3(position.x - 3.0f, position.y + 2.0f, 0.0f));
     }
 
     SDL_GL_SwapWindow(g_display_window);
+}
+
+void reset() {
+    
 }
 
 void shutdown()
@@ -387,7 +474,8 @@ void shutdown()
     delete[] g_game_state.enemies;
     delete    g_game_state.player;
     delete    g_game_state.map;
-    Mix_FreeChunk(g_game_state.jump_sfx);
+    delete    g_game_state.bg;
+//    Mix_FreeChunk(g_game_state.jump_sfx);
     Mix_FreeMusic(g_game_state.bgm);
 }
 

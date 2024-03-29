@@ -1,8 +1,8 @@
 #include "Map.h"
 
 enum EntityType { PLATFORM, PLAYER, ENEMY   };
-enum AIType     { WALKER, GUARD             };
-enum AIState    { WALKING, JUMPING, ATTACKING  };
+enum AIType     { WALKER, GUARD, BOBBER   };
+enum AIState    { IDLE, WALKING  };
 
 class Entity
 {
@@ -13,7 +13,9 @@ private:
     int* m_animation_walkright = NULL, // move to the right
        * m_animation_walkleft = NULL, // move to the left
        * m_animation_attackright = NULL, // attack right
-       * m_animation_attackleft = NULL; // attack left
+       * m_animation_attackleft = NULL, // attack left
+       * m_animation_idleright = NULL, // idle right
+       * m_animation_idleleft = NULL; // idle left
 
     // ––––– PHYSICS (GRAVITY) ––––– //
     glm::vec3 m_position;
@@ -41,14 +43,18 @@ public:
     static const int    WALK_LEFT    = 0,
                         WALK_RIGHT   = 1,
                         ATTACK_LEFT  = 2,
-                        ATTACK_RIGHT = 3;
+                        ATTACK_RIGHT = 3,
+                        IDLE_LEFT    = 4,
+                        IDLE_RIGHT   = 5;
 
     // ————— ANIMATION ————— //
-    int** m_animations = new int*[4] {
+    int** m_animations = new int*[6] {
         m_animation_walkleft,
         m_animation_walkright,
         m_animation_attackleft,
         m_animation_attackright,
+        m_animation_idleleft,
+        m_animation_idleright
     };
 
     int m_animation_frames  = 0,
@@ -94,6 +100,7 @@ public:
 
     void ai_activate(Entity* player);
     void ai_walk();
+    void ai_bob();
     void ai_guard(Entity* player);
 
     void activate() { m_is_active = true; };
@@ -124,4 +131,6 @@ public:
     void const set_acceleration(glm::vec3 new_acceleration) { m_acceleration = new_acceleration;    };
     void const set_width(float new_width)                   { m_width = new_width;                  };
     void const set_height(float new_height)                 { m_height = new_height;                };
+    void const set_scale(glm::vec3 scale)
+    { m_model_matrix = glm::scale(m_model_matrix, scale); };
 };

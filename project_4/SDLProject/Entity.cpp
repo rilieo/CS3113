@@ -13,6 +13,8 @@
 #include "ShaderProgram.h"
 #include "Entity.h"
 
+bool g_did_change = false;
+
 Entity::Entity()
 {
     // ––––– PHYSICS ––––– //
@@ -80,23 +82,40 @@ void Entity::ai_activate(Entity* player)
     case GUARD:
         ai_guard(player);
         break;
+    
+    case BOBBER:
+        ai_bob();
+        break;
 
     default:
         break;
     }
 }
 
+void Entity::ai_bob() 
+{
+    std::cout << m_velocity.y << std::endl;
+    if (m_collided_bottom)
+        m_velocity.y = 5.0f;
+}
+
 void Entity::ai_walk()
 {
-    m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
+    if (m_position.x < 2.0f) {
+        m_position.x = 2.0f;
+        m_movement.x *= -1.0f;
+    } else if (m_position.x > 4.0f) {
+        m_position.x = 4.0f;
+        m_movement.x *= -1.0f;
+    }
 }
 
 void Entity::ai_guard(Entity* player)
 {
     switch (m_ai_state) {
-//    case IDLE:
-//        if (glm::distance(m_position, player->get_position()) < 3.0f) m_ai_state = WALKING;
-//        break;
+    case IDLE:
+        if (glm::distance(m_position, player->get_position()) < 4.0f) m_ai_state = WALKING;
+        break;
 
     case WALKING:
         if (m_position.x > player->get_position().x) {
@@ -105,11 +124,6 @@ void Entity::ai_guard(Entity* player)
         else {
             m_movement = glm::vec3(1.0f, 0.0f, 0.0f);
         }
-        break;
-
-    case JUMPING:
-            m_is_jumping = true;
-            m_jumping_power =  2.0f;
         break;
 
     default:
