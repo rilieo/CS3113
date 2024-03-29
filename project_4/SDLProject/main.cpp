@@ -279,7 +279,7 @@ void initialise()
     
     g_game_state.enemies->m_animations[g_game_state.enemies->ATTACK_RIGHT] = new int[6] {0, 1, 2, 3, 4};
     
-    AIType types[] = {WALKER, GUARD, BOBBER};
+    AIType types[] = {PATROLLER, GUARD, JUMPER};
     float positions[] = {2.5f, 8.0f, 16.0f};
     
     for (int i = 0; i < ENEMY_COUNT; i++) {
@@ -303,7 +303,7 @@ void initialise()
         g_game_state.enemies[i].set_speed(0.5f);
         g_game_state.enemies[i].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
         
-        if (g_game_state.enemies[i].get_ai_type() == WALKER) 
+        if (g_game_state.enemies[i].get_ai_type() == PATROLLER) 
             g_game_state.enemies[i].set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
     }
     

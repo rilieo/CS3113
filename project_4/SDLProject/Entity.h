@@ -1,7 +1,7 @@
 #include "Map.h"
 
 enum EntityType { PLATFORM, PLAYER, ENEMY   };
-enum AIType     { WALKER, GUARD, BOBBER   };
+enum AIType     { PATROLLER, GUARD, JUMPER   };
 enum AIState    { IDLE, WALKING  };
 
 class Entity
@@ -13,9 +13,7 @@ private:
     int* m_animation_walkright = NULL, // move to the right
        * m_animation_walkleft = NULL, // move to the left
        * m_animation_attackright = NULL, // attack right
-       * m_animation_attackleft = NULL, // attack left
-       * m_animation_idleright = NULL, // idle right
-       * m_animation_idleleft = NULL; // idle left
+       * m_animation_attackleft = NULL; // attack left
 
     // ––––– PHYSICS (GRAVITY) ––––– //
     glm::vec3 m_position;
@@ -26,7 +24,6 @@ private:
     float     m_speed;
     glm::vec3 m_movement;
     glm::mat4 m_model_matrix;
-
 
     // ————— ENEMY AI ————— //
     EntityType m_entity_type;
@@ -95,8 +92,8 @@ public:
     void move_down()    { m_movement.y = -1.0f; };
 
     void ai_activate(Entity* player);
-    void ai_walk();
-    void ai_bob();
+    void ai_patrol();
+    void ai_jump();
     void ai_guard(Entity* player);
 
     void activate() { m_is_active = true; };

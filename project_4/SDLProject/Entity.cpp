@@ -85,16 +85,16 @@ void Entity::ai_activate(Entity* player)
 {
     switch (m_ai_type)
     {
-    case WALKER:
-        ai_walk();
+    case PATROLLER:
+        ai_patrol();
         break;
 
     case GUARD:
         ai_guard(player);
         break;
     
-    case BOBBER:
-        ai_bob();
+    case JUMPER:
+        ai_jump();
         break;
 
     default:
@@ -102,7 +102,7 @@ void Entity::ai_activate(Entity* player)
     }
 }
 
-void Entity::ai_bob() 
+void Entity::ai_jump() 
 {
     if (m_collided_bottom) {
         m_is_jumping = true;
@@ -110,7 +110,7 @@ void Entity::ai_bob()
     }
 }
 
-void Entity::ai_walk()
+void Entity::ai_patrol()
 {
     if (m_position.x < 2.0f) {
         m_position.x = 2.0f;
@@ -327,8 +327,6 @@ void const Entity::check_collision_x(Map* map)
         m_collided_right = true;
     }
 }
-
-
 
 void Entity::render(ShaderProgram* program)
 {
