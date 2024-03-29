@@ -1,7 +1,7 @@
 /*
 * Author: Riley Dou
 * Assignment: Rise of the AI
-* Date due: 2024-03-29, 11:59pm
+* Date due: 2024-03-30, 11:59pm
 * I pledge that I have completed this assignment without
 * collaborating with anyone else, in conformance with the
 * NYU School of Engineering Policies and Procedures on
@@ -46,7 +46,7 @@ struct GameState
     Map* bg;
 
     Mix_Music* bgm;
-    Mix_Chunk* jump_sfx;
+    Mix_Chunk* bark_sfx;
 };
 
 // ————— CONSTANTS ————— //
@@ -63,7 +63,7 @@ const int   VIEWPORT_X = 0,
             VIEWPORT_WIDTH = WINDOW_WIDTH,
             VIEWPORT_HEIGHT = WINDOW_HEIGHT;
 
-const char GAME_WINDOW_NAME[] = "The Big City";
+const char GAME_WINDOW_NAME[] = "The City";
 
 const char  V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
             F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
@@ -75,7 +75,8 @@ const char  DOG_FILEPATH[] = "assets/images/dog_spritesheet.png",
             ENEMY_FILEPATH[] = "assets/images/enemy_bee_right.png",
             WIN_FILEPATH[] = "assets/images/win_message.png",
             LOSE_FILEPATH[] = "assets/images/lose_message.png",
-            BGM_FILEPATH[]          = "assets/audio/k-k-slider.mp3";
+            BGM_FILEPATH[]  = "assets/audio/k-k-slider.mp3",
+            BARK_FILEPATH[] = "assets/audio/single-husky-bark.wav";
 
 const int NUMBER_OF_TEXTURES = 1;
 const GLint LEVEL_OF_DETAIL = 0;
@@ -302,19 +303,20 @@ void initialise()
         g_game_state.enemies[i].set_speed(0.5f);
         g_game_state.enemies[i].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
         
-        if (g_game_state.enemies[i].get_ai_type() == WALKER) g_game_state.enemies[i].set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
+        if (g_game_state.enemies[i].get_ai_type() == WALKER) 
+            g_game_state.enemies[i].set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
     }
     
     g_font_texture_id = load_texture("assets/fonts/font1.png");
     
-    //
+    // SET UP AUDIO
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
 
     g_game_state.bgm = Mix_LoadMUS(BGM_FILEPATH);
     Mix_PlayMusic(g_game_state.bgm, -1);
     Mix_VolumeMusic(MIX_MAX_VOLUME / 16.0f);
 
-//    g_game_state.jump_sfx = Mix_LoadWAV(JUMP_SFX_FILEPATH);
+    g_game_state.bark_sfx = Mix_LoadWAV(BARK_FILEPATH);
 
     // ————— BLENDING ————— //
     glEnable(GL_BLEND);
@@ -346,9 +348,18 @@ void process_input()
                 if (g_game_state.player->m_collided_bottom)
                 {
                     g_game_state.player->m_is_jumping = true;
-//                    Mix_PlayChannel(-1, g_game_state.jump_sfx, 0);
                 }
                 break;
+            case SDLK_e: {
+                if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_LEFT]) {
+                    g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT];
+                }
+                else if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT]) {
+                    g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT];
+                }
+                Mix_PlayChannel(-1, g_game_state.bark_sfx, 0);
+                break;
+            }
             default:
                 break;
             }
@@ -369,15 +380,6 @@ void process_input()
     {
         g_game_state.player->move_right();
         g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT];
-    }
-    else if (key_state[SDL_SCANCODE_E])
-    {
-        if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_LEFT]) {
-            g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT];
-        }
-        else if (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->WALK_RIGHT]) {
-            g_game_state.player->m_animation_indices = g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT];
-        }
     }
 
     // This makes sure that the player can't move faster diagonally
@@ -405,24 +407,28 @@ void update()
     {
         g_game_state.player->update(FIXED_TIMESTEP, g_game_state.player, NULL, 0, g_game_state.map);
         
-        for (int i = 0; i < ENEMY_COUNT; i++) g_game_state.enemies[i].update(FIXED_TIMESTEP, g_game_state.player, NULL, 0, g_game_state.map);
+        for (int i = 0; i < ENEMY_COUNT; i++)  { g_game_state.enemies[i].update(FIXED_TIMESTEP, g_game_state.player, NULL, 0, g_game_state.map); }
         
         delta_time -= FIXED_TIMESTEP;
     }
     
     for (int i=0; i < ENEMY_COUNT; i++) {
-            if (g_game_state.player->check_collision(&g_game_state.enemies[i], -0.5)
-                && (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]
-                    || g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT])){
-                attacked_who.insert(i);
-                g_game_state.enemies[i].deactivate();
-            }
-            else if (g_game_state.player->check_collision(&g_game_state.enemies[i], 0)
-                && !(g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]
-                    || g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT])){
-                g_game_lost = true;
-            }
+        if (g_game_state.player->check_collision(&g_game_state.enemies[i], -0.5f)
+            && (g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]
+                || g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT])){
+            attacked_who.insert(i);
+            g_game_state.enemies[i].deactivate();
         }
+        else if (g_game_state.player->check_collision(&g_game_state.enemies[i], 0.5f)
+            && !(g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_LEFT]
+                || g_game_state.player->m_animation_indices == g_game_state.player->m_animations[g_game_state.player->ATTACK_RIGHT])){
+            g_game_lost = true;
+        }
+    }
+    
+    if (g_game_state.player->get_position().y < -4.0f) {
+        g_game_lost = true;
+    }
 
     g_accumulator = delta_time;
 
@@ -446,25 +452,22 @@ void render()
         }
     }
     
-    std::cout << attacked_who.size() << std::endl;
     if (attacked_who.size() == 3) { g_game_won = true; }
     
-    // display lose message
+    // Display lose message
     if (g_game_lost) {
-        glm::vec3 position = g_game_state.player->get_position();
-        draw_text(&g_shader_program, g_font_texture_id, "You lose!", 1.5f, -0.7f, glm::vec3(position.x - 3.0f, position.y + 2.0f, 0.0f));
+        float x_position = g_game_state.player->get_position().x;
+        draw_text(&g_shader_program, g_font_texture_id, "You lose!", 1.5f, -0.7f, glm::vec3(x_position - 3.0f, 0.0f, 0.0f));
+        
+        for (int i = 0; i < ENEMY_COUNT; i++)  { g_game_state.enemies[i].deactivate(); }
     }
-    // display win message
+    // Display win message
     else if (g_game_won) {
-        glm::vec3 position = g_game_state.player->get_position();
-        draw_text(&g_shader_program, g_font_texture_id, "You won!", 1.5f, -0.7f, glm::vec3(position.x - 3.0f, position.y + 2.0f, 0.0f));
+        float x_position = g_game_state.player->get_position().x;
+        draw_text(&g_shader_program, g_font_texture_id, "You won!", 1.5f, -0.7f, glm::vec3(x_position - 2.5f, 0.0f, 0.0f));
     }
 
     SDL_GL_SwapWindow(g_display_window);
-}
-
-void reset() {
-    
 }
 
 void shutdown()
@@ -475,7 +478,7 @@ void shutdown()
     delete    g_game_state.player;
     delete    g_game_state.map;
     delete    g_game_state.bg;
-//    Mix_FreeChunk(g_game_state.jump_sfx);
+    Mix_FreeChunk(g_game_state.bark_sfx);
     Mix_FreeMusic(g_game_state.bgm);
 }
 

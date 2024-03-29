@@ -94,9 +94,10 @@ void Entity::ai_activate(Entity* player)
 
 void Entity::ai_bob() 
 {
-    std::cout << m_velocity.y << std::endl;
-    if (m_collided_bottom)
-        m_velocity.y = 5.0f;
+    if (m_collided_bottom) {
+        m_is_jumping = true;
+        m_jumping_power = 5.0f;
+    }
 }
 
 void Entity::ai_walk()
@@ -141,8 +142,6 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
     m_collided_left = false;
     m_collided_right = false;
 
-    if (m_entity_type == ENEMY) ai_activate(player);
-
     if (m_animation_indices != NULL)
     {
         if (glm::length(m_movement) != 0)
@@ -176,6 +175,8 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
     check_collision_x(objects, object_count);
     check_collision_x(map);
 
+    if (m_entity_type == ENEMY) ai_activate(player);
+    
     if (m_is_jumping)
     {
         m_is_jumping = false;

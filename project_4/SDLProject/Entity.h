@@ -43,9 +43,7 @@ public:
     static const int    WALK_LEFT    = 0,
                         WALK_RIGHT   = 1,
                         ATTACK_LEFT  = 2,
-                        ATTACK_RIGHT = 3,
-                        IDLE_LEFT    = 4,
-                        IDLE_RIGHT   = 5;
+                        ATTACK_RIGHT = 3;
 
     // ————— ANIMATION ————— //
     int** m_animations = new int*[6] {
@@ -53,8 +51,6 @@ public:
         m_animation_walkright,
         m_animation_attackleft,
         m_animation_attackright,
-        m_animation_idleleft,
-        m_animation_idleright
     };
 
     int m_animation_frames  = 0,
@@ -131,6 +127,4 @@ public:
     void const set_acceleration(glm::vec3 new_acceleration) { m_acceleration = new_acceleration;    };
     void const set_width(float new_width)                   { m_width = new_width;                  };
     void const set_height(float new_height)                 { m_height = new_height;                };
-    void const set_scale(glm::vec3 scale)
-    { m_model_matrix = glm::scale(m_model_matrix, scale); };
 };
