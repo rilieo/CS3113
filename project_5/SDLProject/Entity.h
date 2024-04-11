@@ -1,6 +1,6 @@
 #include "Map.h"
 
-enum EntityType { PLATFORM, PLAYER, ENEMY   };
+enum EntityType { PLATFORM, PLAYER, ENEMY, OBJECT   };
 enum AIType     { PATROLLER, GUARD, JUMPER  };
 enum AIState    { WALKING, IDLE, ATTACKING  };
 
@@ -15,7 +15,8 @@ private:
        * m_animation_attack_right = NULL, // attack to the right
        * m_animation_attack_left = NULL, // attack to the left
        * m_animation_hurt_right = NULL, // attack to the left
-       * m_animation_hurt_left = NULL; // attack to the left
+       * m_animation_hurt_left = NULL, // attack to the left
+       * m_animation_chest = NULL;
     
     // ––––– PHYSICS (GRAVITY) ––––– //
     glm::vec3 m_position;
@@ -39,16 +40,17 @@ private:
 
 public:
     // ————— STATIC VARIABLES ————— //
-    static const int    SECONDS_PER_FRAME = 4;
+    static const int    SECONDS_PER_FRAME = 6;
     static const int    WALK_LEFT    = 0,
                         WALK_RIGHT   = 1,
                         ATTACK_LEFT  = 2,
                         ATTACK_RIGHT = 3,
                         HURT_LEFT    = 4,
-                        HURT_RIGHT   = 5;
+                        HURT_RIGHT   = 5,
+                        CHEST = 6;
 
     // ————— ANIMATION ————— //
-    int** m_animations = new int* [6]
+    int** m_animations = new int* [7]
         {
             m_animation_walk_left,
             m_animation_walk_right,
@@ -56,6 +58,7 @@ public:
             m_animation_attack_right,
             m_animation_hurt_left,
             m_animation_hurt_right,
+            m_animation_chest,
         };
 
     int m_animation_frames  = 0,
@@ -77,6 +80,7 @@ public:
     bool m_collided_right = false;
     
     bool m_hit = false;
+    bool m_got_flag = false;
     
     float m_countdown = 1.0f;
 

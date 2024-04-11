@@ -56,7 +56,9 @@ Mix_Music *g_bgm;
 Mix_Chunk *g_bark_sfx;
 
 int g_num_lives = 3;
-GLuint g_font_texture_id;
+GLuint g_font_texture_id,
+       g_bg_texture_id;
+        
 
 SDL_Window* g_display_window;
 bool g_game_is_running = true;
@@ -104,6 +106,7 @@ void initialise()
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
     
     g_font_texture_id = Utility::load_texture("assets/fonts/font1.png");
+//    g_bg_texture_id = Utility::load_texture("assets/swamp-tileset/2 Background/Background.png");
     
     // ————— Player SETUP ————— //
     g_player = new Entity();
@@ -150,7 +153,7 @@ void initialise()
     
     g_bgm = Mix_LoadMUS("assets/audio/k-k-slider.mp3");
     Mix_PlayMusic(g_bgm, -1);
-    Mix_VolumeMusic(0.0f);
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 16.0f);
     
     g_bark_sfx = Mix_LoadWAV("assets/audio/single-husky-bark.wav");
     
@@ -262,7 +265,7 @@ void update()
         
         if (g_current_scene != g_menu_screen && g_current_scene->m_state.player->m_hit) {
             g_num_lives--;
-            std::cout << "num lives" << g_num_lives << std::endl;
+//            std::cout << "num lives" << g_num_lives << std::endl;
             g_current_scene->m_state.player->m_hit = false;
         }
         delta_time -= FIXED_TIMESTEP;
@@ -281,14 +284,13 @@ void update()
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-5, 3.75, 0));
     }
     
-    /*    if (g_current_scene != g_menu_screen && g_current_scene->m_state.player->get_position().x > LEVEL1_RIGHT_EDGE && g_current_scene->m_state.player->get_position().y < LEVEL1_BOTTOM_EDGE)*/
-    if (g_current_scene == g_level_a && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE){
+    if (g_current_scene == g_level_a && g_current_scene->m_state.player->get_position().x > LEVEL_RIGHT_EDGE && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE) {
         switch_to_scene(g_level_b);
     }
     
-        if (g_current_scene == g_level_b && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE){
-            switch_to_scene(g_level_c);
-        }
+    if (g_current_scene == g_level_b && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE){
+        switch_to_scene(g_level_c);
+    }
 }
 
 void render()
@@ -304,6 +306,10 @@ void render()
         float x_position = g_current_scene->m_state.player->get_position().x;
         Utility::draw_text(&g_shader_program, g_font_texture_id, "You lose!", 1.5f, -0.7f, glm::vec3(x_position - 3.0f, -3.5f, 0.0f));
     }
+    else if (g_num_lives > 0 && g_current_scene == g_level_c && g_current_scene->m_state.player->m_got_flag) {
+        float x_position = g_current_scene->m_state.player->get_position().x;
+        Utility::draw_text(&g_shader_program, g_font_texture_id, "You win!", 1.5f, -0.7f, glm::vec3(x_position - 3.0f, -3.5f, 0.0f));
+    }
     
     SDL_GL_SwapWindow(g_display_window);
 }
@@ -315,7 +321,10 @@ void shutdown()
     // ————— DELETING LEVEL A DATA (i.e. map, character, enemies...) ————— //
     delete g_level_a;
     delete g_level_b;
+    delete g_level_c;
     delete g_menu_screen;
+    Mix_FreeChunk(g_bark_sfx);
+    Mix_FreeMusic(g_bgm);
 }
 
 // ————— GAME LOOP ————— //

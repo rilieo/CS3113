@@ -25,9 +25,9 @@
 struct GameState {
     // ————— GAME OBJECTS ————— //
     Map    *map;
-    Map    *objects;
     Entity *player;
     Entity *enemies;
+    Entity *objects;
     
     std::set<int> attacked_who;
 

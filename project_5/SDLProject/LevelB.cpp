@@ -43,7 +43,7 @@ void LevelB::initialise(Entity* player)
     GLuint objects_texture_id = Utility::load_texture("assets/images/swamp-tileset/3 Objects/Ladders/ladders.png");
 
     m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELB_DATA, map_texture_id, 1.0f, 10, 6);
-    m_state.objects = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELB_OBJECTS_DATA, objects_texture_id, 1.0f, 3, 2);
+//    m_state.objects = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELB_OBJECTS_DATA, objects_texture_id, 1.0f, 3, 2);
 
     m_state.player = player;
     m_state.player->set_position(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -103,7 +103,7 @@ void LevelB::update(float delta_time)
 void LevelB::render(ShaderProgram *program)
 {
     m_state.map->render(program);
-    m_state.objects->render(program);
+//    m_state.objects->render(program);
     m_state.player->render(program);
     
     for (int i=0; i<ENEMY_COUNT; i++) {

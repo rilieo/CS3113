@@ -34,6 +34,7 @@ Entity::~Entity()
     delete[] m_animation_attack_right;
     delete[] m_animation_hurt_left;
     delete[] m_animation_hurt_right;
+    delete[] m_animation_chest;
     delete[] m_animations;
 }
 
