@@ -20,6 +20,7 @@
 		9A8332C42BB1328E00EB3EEB /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B662323DEEA007CECB1 /* SDL2.framework */; };
 		9A8332C62BB1334900EB3EEB /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B682323DEEA007CECB1 /* SDL2_mixer.framework */; };
 		9AD00FD82BC3BB3000C2A283 /* LevelC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AD00FD72BC3BB3000C2A283 /* LevelC.cpp */; };
+		9AD00FDC2BCA2CD100C2A283 /* Effects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -60,6 +61,8 @@
 		9A5AE8302BC3767200151DD5 /* MenuScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuScreen.h; sourceTree = "<group>"; };
 		9AD00FD72BC3BB3000C2A283 /* LevelC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LevelC.cpp; sourceTree = "<group>"; };
 		9AD00FD92BC3BB3C00C2A283 /* LevelC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelC.h; sourceTree = "<group>"; };
+		9AD00FDA2BCA2CB700C2A283 /* Effects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Effects.h; sourceTree = "<group>"; };
+		9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Effects.cpp; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 				9A5AE82C2BC3764100151DD5 /* LevelB.cpp */,
 				9A5AE8252BC375B100151DD5 /* Scene.h */,
 				9A5AE8262BC375BE00151DD5 /* Scene.cpp */,
+				9AD00FDA2BCA2CB700C2A283 /* Effects.h */,
+				9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */,
 				9A5AE8222BC3757600151DD5 /* Utility.cpp */,
 				9AD00FD72BC3BB3000C2A283 /* LevelC.cpp */,
 				9AD00FD92BC3BB3C00C2A283 /* LevelC.h */,
@@ -210,6 +215,7 @@
 				9A5AE8232BC3757600151DD5 /* Utility.cpp in Sources */,
 				9AD00FD82BC3BB3000C2A283 /* LevelC.cpp in Sources */,
 				9A5AE8272BC375BE00151DD5 /* Scene.cpp in Sources */,
+				9AD00FDC2BCA2CD100C2A283 /* Effects.cpp in Sources */,
 				DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */,
 				8401114628864A3000A4D23F /* Map.cpp in Sources */,
 				9A5AE8292BC3760100151DD5 /* LevelA.cpp in Sources */,
