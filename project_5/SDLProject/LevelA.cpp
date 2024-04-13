@@ -19,18 +19,26 @@ signed int LEVELA_DATA[] =
 
 LevelA::~LevelA()
 {
-    delete [] m_state.enemies;
-    delete    m_state.player;
+    delete[]  m_state.enemies;
     delete    m_state.map;
+    delete[]  m_state.objects;
 }
 
 void LevelA::initialise(Entity* player)
 {
-    GLuint map_texture_id = Utility::load_texture("assets/images/swamp-tileset/1 Tiles/Tileset.png");
-//    m_state.bg = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, BG_DATA, map_texture_id, 1.0f, 8, 9);
-    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELA_DATA, map_texture_id, 1.0f, 10,6);
-
+    
     m_state.player = player;
+    
+    GLuint map_texture_id = Utility::load_texture("assets/images/swamp-tileset/1 Tiles/Tileset.png");
+
+    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELA_DATA, map_texture_id, 1.0f, 10,6);
+    
+    m_state.objects = new Entity[1];
+    m_state.objects[0].m_texture_id = Utility::load_texture("assets/images/swamp-tileset/3 Objects/Pointers/5.png");
+    m_state.objects[0].set_scale(glm::vec3(0.5f, 0.5f, 1.0f));
+    m_state.objects[0].set_position(glm::vec3(15.0f, 0.0f, 0.0f));
+    m_state.objects[0].set_entity_type(OBJECT);
+    m_state.objects[0].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
     
     /* Enemies' stuff */
     m_state.enemies = new Entity[ENEMY_COUNT];
@@ -70,44 +78,38 @@ void LevelA::initialise(Entity* player)
 
 void LevelA::update(float delta_time)
 {
-    m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
+    if (m_state.is_frozen) {
+        m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map, true);
+        
+        for (int i = 0; i < ENEMY_COUNT; i++)
+        {
+            m_state.enemies[i].update(delta_time, m_state.player, NULL, 0, m_state.map, true);
+        }
+        
+        m_state.objects[0].update(delta_time, m_state.player, NULL, 0, m_state.map, true);
+        
+        return;
+    }
+    
+    m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map, false);
     
     for (int i = 0; i < ENEMY_COUNT; i++)
     {
-        m_state.enemies[i].update(delta_time, m_state.player, NULL, 0, m_state.map);
+        m_state.enemies[i].update(delta_time, m_state.player, NULL, 0, m_state.map, false);
     }
     
-    for (int i=0; i < ENEMY_COUNT; i++) {
-        if (m_state.player->check_collision(&m_state.enemies[i], -0.5f)
-            && (m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_LEFT]
-                || m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_RIGHT])) {
-            m_state.attacked_who.insert(i);
-            m_state.enemies[i].deactivate();
-        }
-        else if (m_state.player->check_collision(&m_state.enemies[i], 0.5f)) {
-             if (!(m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_LEFT]))
-                 m_state.player->m_animation_indices = m_state.player->m_animations[m_state.player->HURT_LEFT];
-             else if (!(m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_RIGHT]))
-                 m_state.player->m_animation_indices = m_state.player->m_animations[m_state.player->HURT_RIGHT];
-            
-            if (m_state.player->m_countdown < 0.0f) {
-                m_state.player->m_hit = true;
-                m_state.player->m_countdown = 1.0f;
-            }
-        }
-    }
+    m_state.objects[0].update(delta_time, m_state.player, NULL, 0, m_state.map, false);
 }
 
 
 void LevelA::render(ShaderProgram *program)
 {
-//    m_state.bg->render(program);
+    m_state.objects->render(program);
     m_state.map->render(program);
     m_state.player->render(program);
     
-    for (int i=0; i<ENEMY_COUNT; i++) {
-        if (!m_state.attacked_who.count(i))
-            m_state.enemies[i].render(program);
+    for (size_t i=0; i < ENEMY_COUNT; ++i) {
+        m_state.enemies[i].render(program);
     }
     
 }

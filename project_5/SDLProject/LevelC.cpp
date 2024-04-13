@@ -5,24 +5,12 @@
 #define LEVEL_HEIGHT 8
 #define ENEMY_COUNT 1
 
-signed int LEVELC_OBJECTS_DATA[] =
-{
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-};
-
 signed int LEVELC_DATA[] =
 {
-    34, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    44, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    54, 39, 19, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    55, 21, 21, 22, -1, -1, 0, 9, 2, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    0, 39, 19, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    21, 21, 21, 22, -1, -1, 0, 9, 2, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, 20, 21, 22, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, 31, 32, 33, -1, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2,
@@ -32,7 +20,6 @@ signed int LEVELC_DATA[] =
 LevelC::~LevelC()
 {
     delete [] m_state.enemies;
-    delete    m_state.player;
     delete    m_state.map;
     delete[]  m_state.objects;
 }
@@ -85,32 +72,28 @@ void LevelC::initialise(Entity* player)
 
 void LevelC::update(float delta_time)
 {
-    m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
-    std::cout << m_state.player->get_position().x << std::endl;
+    
+    if (m_state.is_frozen) {
+        m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map, true);
+        
+        for (int i = 0; i < ENEMY_COUNT; i++)
+        {
+            m_state.enemies[i].update(delta_time, m_state.player, NULL, 0, m_state.map, true);
+        }
+        
+        m_state.objects[0].update(delta_time, m_state.player, NULL, 0, m_state.map, true);
+        
+        return;
+    }
+    
+    m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map, false);
     
     for (int i = 0; i < ENEMY_COUNT; i++)
     {
-        m_state.enemies[i].update(delta_time, m_state.player, NULL, 0, m_state.map);
+        m_state.enemies[i].update(delta_time, m_state.player, NULL, 0, m_state.map, false);
     }
     
-    m_state.objects[0].update(delta_time, m_state.player, NULL, 0, m_state.map);
-    
-    for (int i=0; i < ENEMY_COUNT; i++) {
-        if (m_state.player->check_collision(&m_state.enemies[i], -0.5f)
-            && (m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_LEFT]
-                || m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_RIGHT])) {
-            m_state.attacked_who.insert(i);
-            m_state.enemies[i].deactivate();
-        }
-        else if (m_state.player->check_collision(&m_state.enemies[i], 0) && m_state.player->m_countdown <= 0.0f) {
-             if (!(m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_LEFT]))
-                 m_state.player->m_animation_indices = m_state.player->m_animations[m_state.player->HURT_LEFT];
-             else if (!(m_state.player->m_animation_indices == m_state.player->m_animations[m_state.player->ATTACK_RIGHT]))
-                 m_state.player->m_animation_indices = m_state.player->m_animations[m_state.player->HURT_RIGHT];
-            m_state.player->m_hit = true;
-            m_state.player->m_countdown = 1.0f;
-        }
-    }
+    m_state.objects[0].update(delta_time, m_state.player, NULL, 0, m_state.map, false);
     
     if (m_state.player->check_collision(&m_state.objects[0], 0)) {
         m_state.player->m_got_flag = true;
@@ -124,9 +107,8 @@ void LevelC::render(ShaderProgram *program)
     m_state.objects->render(program);
     m_state.player->render(program);
     
-    for (int i=0; i<ENEMY_COUNT; i++) {
-        if (!m_state.attacked_who.count(i))
-            m_state.enemies[i].render(program);
+    for (size_t i=0; i < ENEMY_COUNT; ++i) {
+        m_state.enemies[i].render(program);
     }
     
 }

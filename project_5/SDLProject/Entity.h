@@ -82,7 +82,7 @@ public:
     bool m_hit = false;
     bool m_got_flag = false;
     
-    float m_countdown = 1.0f;
+    float m_countdown = 0.7f;
 
     GLuint    m_texture_id;
 
@@ -91,7 +91,7 @@ public:
     ~Entity();
 
     void draw_sprite_from_texture_atlas(ShaderProgram* program, GLuint texture_id, int index);
-    void update(float delta_time, Entity* player, Entity* objects, int object_count, Map* map); // Now, update should check for both objects in the game AND the map
+    void update(float delta_time, Entity* player, Entity* objects, int object_count, Map* map, bool frozen); // Now, update should check for both objects in the game AND the map
     void render(ShaderProgram* program);
 
     bool const check_collision(Entity* other, const float extra) const;
@@ -140,4 +140,5 @@ public:
     void const set_acceleration(glm::vec3 new_acceleration) { m_acceleration = new_acceleration;    };
     void const set_width(float new_width)                   { m_width = new_width;                  };
     void const set_height(float new_height)                 { m_height = new_height;                };
+    void const set_scale(glm::vec3 new_scale)               { m_model_matrix = glm::scale(m_model_matrix, new_scale);                };
 };

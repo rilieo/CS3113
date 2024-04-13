@@ -25,11 +25,13 @@
 struct GameState {
     // ————— GAME OBJECTS ————— //
     Map    *map;
+//    Map    *bg;
     Entity *player;
     Entity *enemies;
     Entity *objects;
     
     std::set<int> attacked_who;
+    bool is_frozen = false;
 
     // ————— POINTERS TO OTHER SCENES ————— //
     int next_scene_id;

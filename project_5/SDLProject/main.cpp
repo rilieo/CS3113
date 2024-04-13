@@ -2,7 +2,9 @@
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
 #define LEVEL1_LEFT_EDGE 5.0f
-#define LEVEL_RIGHT_EDGE 16.0f
+#define LEVEL1_RIGHT_EDGE 16.0f
+#define LEVEL2_RIGHT_EDGE 10.0f
+#define LEVEL2_LEFT_EDGE 7.0f
 #define LEVEL_BOTTOM_EDGE -7.2f
 
 #ifdef _WINDOWS
@@ -24,7 +26,7 @@
 #include "LevelB.h"
 #include "LevelC.h"
 #include "MenuScreen.h"
-#include <set>
+#include "Effects.h"
 
 // ————— CONSTANTS ————— //
 const int WINDOW_WIDTH  = 640,
@@ -54,6 +56,7 @@ LevelC *g_level_c;
 Entity *g_player;
 Mix_Music *g_bgm;
 Mix_Chunk *g_bark_sfx;
+Effects *g_effects;
 
 int g_num_lives = 3;
 GLuint g_font_texture_id,
@@ -68,6 +71,8 @@ glm::mat4 g_view_matrix, g_projection_matrix;
 
 float g_previous_ticks = 0.0f;
 float g_accumulator = 0.0f;
+
+bool g_pressed = false;
 
 void switch_to_scene(Scene *scene)
 {
@@ -107,6 +112,9 @@ void initialise()
     
     g_font_texture_id = Utility::load_texture("assets/fonts/font1.png");
 //    g_bg_texture_id = Utility::load_texture("assets/swamp-tileset/2 Background/Background.png");
+    
+    g_effects = new Effects(g_projection_matrix, g_view_matrix);
+    g_effects->start(FADEIN, 1.0f);
     
     // ————— Player SETUP ————— //
     g_player = new Entity();
@@ -185,18 +193,20 @@ void process_input()
                         
                     case SDLK_SPACE:
                         // Jump
-                        if (g_current_scene != g_menu_screen && g_current_scene->m_state.player->m_collided_bottom)
+                        if (!g_current_scene->m_state.is_frozen && g_current_scene != g_menu_screen && g_current_scene->m_state.player->m_collided_bottom)
                             g_current_scene->m_state.player->m_is_jumping = true;
                         break;
                     case SDLK_e: {
-                        Mix_PlayChannel(-1, g_bark_sfx, 0);
-                        if (g_current_scene != g_menu_screen &&
-                            g_current_scene->m_state.player->m_animation_indices == g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_LEFT]) {
-                            g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->ATTACK_LEFT];
-                        }
-                        else if (g_current_scene != g_menu_screen && 
-                                 g_current_scene->m_state.player->m_animation_indices == g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_RIGHT]) {
-                            g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->ATTACK_RIGHT];
+                        if (!g_current_scene->m_state.is_frozen) {
+                            Mix_PlayChannel(-1, g_bark_sfx, 0);
+                            if (g_current_scene != g_menu_screen &&
+                                g_current_scene->m_state.player->m_animation_indices == g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_LEFT]) {
+                                g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->ATTACK_LEFT];
+                            }
+                            else if (g_current_scene != g_menu_screen &&
+                                     g_current_scene->m_state.player->m_animation_indices == g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_RIGHT]) {
+                                g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->ATTACK_RIGHT];
+                            }
                         }
                         break;
                     }
@@ -204,6 +214,15 @@ void process_input()
                         if (g_current_scene == g_menu_screen)
                             switch_to_scene(g_level_a);
                         break;
+                    }
+                    case SDLK_f: {
+                        if (!g_pressed && g_current_scene != g_menu_screen) {
+                            g_current_scene->m_state.is_frozen = true;
+                            g_pressed = true;
+                        } else if (g_pressed && g_current_scene != g_menu_screen) {
+                            g_current_scene->m_state.is_frozen = false;
+                            g_pressed = false;
+                        }
                     }
             default:
                 break;
@@ -215,31 +234,33 @@ void process_input()
     }
 
     const Uint8* key_state = SDL_GetKeyboardState(NULL);
-
-    if (g_current_scene != g_menu_screen) {
-        if (key_state[SDL_SCANCODE_LEFT])
-        {
-            g_current_scene->m_state.player->move_left();
-            g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_LEFT];
-        }
-        else if (key_state[SDL_SCANCODE_RIGHT])
-        {
-            g_current_scene->m_state.player->move_right();
-            g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_RIGHT];
-        }
-        else if (key_state[SDL_SCANCODE_DOWN])
-        {
-            g_current_scene->m_state.player->move_down();
-        }
-        else if (key_state[SDL_SCANCODE_UP])
-        {
-            g_current_scene->m_state.player->move_up();
-        }
-        
-        // This makes sure that the player can't move faster diagonally
-        if (glm::length(g_current_scene->m_state.player->get_movement()) > 1.0f)
-        {
-            g_current_scene->m_state.player->set_movement(glm::normalize(g_current_scene->m_state.player->get_movement()));
+    
+    if (!g_current_scene->m_state.is_frozen) {
+        if (g_current_scene != g_menu_screen) {
+            if (key_state[SDL_SCANCODE_LEFT])
+            {
+                g_current_scene->m_state.player->move_left();
+                g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_LEFT];
+            }
+            else if (key_state[SDL_SCANCODE_RIGHT])
+            {
+                g_current_scene->m_state.player->move_right();
+                g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_animations[g_current_scene->m_state.player->WALK_RIGHT];
+            }
+            else if (key_state[SDL_SCANCODE_DOWN])
+            {
+                g_current_scene->m_state.player->move_down();
+            }
+            else if (key_state[SDL_SCANCODE_UP])
+            {
+                g_current_scene->m_state.player->move_up();
+            }
+            
+            // This makes sure that the player can't move faster diagonally
+            if (glm::length(g_current_scene->m_state.player->get_movement()) > 1.0f)
+            {
+                g_current_scene->m_state.player->set_movement(glm::normalize(g_current_scene->m_state.player->get_movement()));
+            }
         }
     }
 }
@@ -261,11 +282,13 @@ void update()
     
     while (delta_time >= FIXED_TIMESTEP) {
         // ————— UPDATING THE SCENE (i.e. map, character, enemies...) ————— //
+        
+        if (g_current_scene != g_menu_screen) g_effects->update(FIXED_TIMESTEP);
+        
         g_current_scene->update(FIXED_TIMESTEP);
         
         if (g_current_scene != g_menu_screen && g_current_scene->m_state.player->m_hit) {
             g_num_lives--;
-//            std::cout << "num lives" << g_num_lives << std::endl;
             g_current_scene->m_state.player->m_hit = false;
         }
         delta_time -= FIXED_TIMESTEP;
@@ -284,13 +307,21 @@ void update()
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-5, 3.75, 0));
     }
     
-    if (g_current_scene == g_level_a && g_current_scene->m_state.player->get_position().x > LEVEL_RIGHT_EDGE && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE) {
+    if (g_current_scene == g_level_a && g_current_scene->m_state.player->get_position().x > LEVEL1_RIGHT_EDGE && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE) {
+        g_effects->start(FADEOUT, 1.0f);
         switch_to_scene(g_level_b);
+        g_effects->start(FADEIN, 1.85f);
     }
     
-    if (g_current_scene == g_level_b && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE){
+    if (g_current_scene == g_level_b &&
+        g_current_scene->m_state.player->get_position().x > LEVEL2_LEFT_EDGE && g_current_scene->m_state.player->get_position().x < LEVEL2_RIGHT_EDGE && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE){
+        g_effects->start(FADEOUT, 1.0f);
         switch_to_scene(g_level_c);
+        g_effects->start(FADEIN, 1.85f);
     }
+    
+    if (g_current_scene->m_state.is_frozen) Mix_PauseMusic();
+    else if (!g_current_scene->m_state.is_frozen) Mix_ResumeMusic();
 }
 
 void render()
@@ -300,9 +331,10 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
     
     // ————— RENDERING THE SCENE (i.e. map, character, enemies...) ————— //
+    g_effects->render();
     g_current_scene->render(&g_shader_program);
     
-    if (g_num_lives <= 0) {
+    if (g_num_lives <= 0 || (g_current_scene != g_menu_screen && g_current_scene->m_state.player->get_position().y < LEVEL_BOTTOM_EDGE)) {
         float x_position = g_current_scene->m_state.player->get_position().x;
         Utility::draw_text(&g_shader_program, g_font_texture_id, "You lose!", 1.5f, -0.7f, glm::vec3(x_position - 3.0f, -3.5f, 0.0f));
     }
@@ -323,6 +355,7 @@ void shutdown()
     delete g_level_b;
     delete g_level_c;
     delete g_menu_screen;
+    delete g_effects;
     Mix_FreeChunk(g_bark_sfx);
     Mix_FreeMusic(g_bgm);
 }

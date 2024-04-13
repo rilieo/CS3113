@@ -18,6 +18,6 @@ void MenuScreen::update(float delta_time) {}
 
 void MenuScreen::render(ShaderProgram *program)
 {
-    Utility::draw_text(program, texture_id, "Press Enter to Start", 0.8, -0.35, glm::vec3(0.7f, -4.0f, 0.0f));
+    Utility::draw_text(program, texture_id, "Press Enter to Start", 0.8, -0.35, glm::vec3(0.7f, -3.8f, 0.0f));
     
 }

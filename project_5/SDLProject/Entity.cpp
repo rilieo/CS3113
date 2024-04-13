@@ -28,13 +28,6 @@ Entity::Entity()
 
 Entity::~Entity()
 {
-    delete[] m_animation_walk_left;
-    delete[] m_animation_walk_right;
-    delete[] m_animation_attack_left;
-    delete[] m_animation_attack_right;
-    delete[] m_animation_hurt_left;
-    delete[] m_animation_hurt_right;
-    delete[] m_animation_chest;
     delete[] m_animations;
 }
 
@@ -138,7 +131,7 @@ void Entity::ai_jump() {
 }
 
 
-void Entity::update(float delta_time, Entity* player, Entity* objects, int object_count, Map* map)
+void Entity::update(float delta_time, Entity* player, Entity* objects, int object_count, Map* map, bool frozen)
 {
     if (!m_is_active) return;
 
@@ -147,7 +140,7 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
     m_collided_left = false;
     m_collided_right = false;
 
-    if (m_animation_indices != NULL)
+    if (!frozen && m_animation_indices != NULL)
     {
         if (glm::length(m_movement) != 0)
         {
@@ -166,9 +159,14 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
             }
         }
     }
-
-    m_velocity.x = m_movement.x * m_speed;
-    m_velocity += m_acceleration * delta_time;
+    
+    if (frozen) {
+        m_velocity.x = 0;
+        m_velocity.y = 0;
+    } else {
+        m_velocity.x = m_movement.x * m_speed;
+        m_velocity += m_acceleration * delta_time;
+    }
 
     // We make two calls to our check_collision methods, one for the collidable objects and one for
     // the map.
@@ -180,15 +178,28 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
     check_collision_x(objects, object_count);
     check_collision_x(map);
     
-//    if (map->is_on_ladder(m_position)) {
-//        if (m_movement.y > 0 || m_movement.y < 0) {
-//            m_velocity.y = m_movement.y * m_speed;
-//        } else {
-//            m_velocity.y = 0;
-//        }
-//    }
-    
     if (m_entity_type == ENEMY) ai_activate(player);
+    
+    if (m_entity_type == ENEMY) {
+        if (check_collision(player, -0.5f) 
+            && (player->m_animation_indices == player->m_animations[player->ATTACK_LEFT]
+                || player->m_animation_indices == player->m_animations[player->ATTACK_RIGHT])) {
+            m_is_active = false;
+        }
+        else if (check_collision(player, 0.0f)) {
+            if (!(player->m_animation_indices == player->m_animations[player->ATTACK_LEFT])) {
+                player->m_animation_indices = player->m_animations[player->HURT_LEFT];
+            }
+            else if (!(player->m_animation_indices == player->m_animations[player->ATTACK_RIGHT])) {
+                player->m_animation_indices = player->m_animations[player->HURT_RIGHT];
+            }
+            
+            if (player->m_countdown < 0.0f) {
+                player->m_hit = true;
+                player->m_countdown = 1.0f;
+            }
+        }
+    }
 
     if (m_is_jumping)
     {
@@ -335,6 +346,8 @@ void const Entity::check_collision_x(Map* map)
 
 void Entity::render(ShaderProgram* program)
 {
+    if (!m_is_active) return;
+    
     program->set_model_matrix(m_model_matrix);
 
     if (m_animation_indices != NULL)
