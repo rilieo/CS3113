@@ -73,11 +73,12 @@ public:
     bool m_collided_right = false;
     
     bool m_hit = false;
-    bool m_is_idle = true;
     bool m_is_planted = false;
+    bool m_crossed = false;
+    
+    int m_num_hits = 3;
     
     float m_countdown = 0.7f;
-    float m_until_next = 1.0f;
 
     GLuint    m_texture_id;
     
@@ -89,7 +90,7 @@ public:
     ~Entity();
 
     void draw_sprite_from_texture_atlas(ShaderProgram* program, GLuint texture_id, int index);
-    void update(float delta_time, Entity* players, Entity* enemies, int object_count, Map* map, int planted_players); // Now, update should check for both objects in the game AND the map
+    void update(float delta_time, Entity* players, Entity* enemies, int count, Map* map); // Now, update should check for both objects in the game AND the map
     void render(ShaderProgram* program);
 
     bool const check_collision(Entity* other, const float extra) const;
@@ -105,8 +106,8 @@ public:
     void move_up()      { m_movement.y = 1.0f; };
     void move_down()    { m_movement.y = -1.0f; };
 
-    void ai_activate(int planted_players);
-    void ai_zombie(int planted_players);
+    void ai_activate();
+    void ai_zombie();
 
     void activate() { m_is_active = true; };
     void deactivate() { m_is_active = false; };

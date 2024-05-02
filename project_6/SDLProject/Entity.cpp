@@ -1,13 +1,3 @@
-/*
-* Author: Riley Dou
-* Assignment: Platformer
-* Date due: 2024-04-13, 11:59pm
-* I pledge that I have completed this assignment without
-* collaborating with anyone else, in conformance with the
-* NYU School of Engineering Policies and Procedures on
-* Academic Misconduct.
-*/
-
 #define GL_SILENCE_DEPRECATION
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -81,12 +71,12 @@ void Entity::draw_sprite_from_texture_atlas(ShaderProgram* program, GLuint textu
     glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
 }
 
-void Entity::ai_activate(int planted_players)
+void Entity::ai_activate()
 {
     switch (m_ai_type)
     {
     case ZOMBIE:
-        ai_zombie(planted_players);
+        ai_zombie();
         break;
             
     default:
@@ -94,11 +84,11 @@ void Entity::ai_activate(int planted_players)
     }
 }
 
-void Entity::ai_zombie(int planted_players)
+void Entity::ai_zombie()
 {
     switch (m_ai_state) {
     case IDLE:
-        if (planted_players >= 1) m_ai_state = WALKING;
+        m_ai_state = WALKING;
         break;
 
     case WALKING: {
@@ -116,7 +106,7 @@ void Entity::ai_zombie(int planted_players)
 }
 
 
-void Entity::update(float delta_time, Entity* player, Entity* objects, int object_count, Map* map, int planted_players)
+void Entity::update(float delta_time, Entity* player, Entity* enemies, int count, Map* map)
 {
     if (!m_is_active) return;
 
@@ -143,25 +133,17 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
     }
     
     if (m_entity_type == WEAPON) {
-        
         if (!m_is_set && player->m_is_planted) {
-            m_position = player->get_position();
+            m_position = player->m_position;
             m_position.x += 1.0f;
             m_is_set = !m_is_set;
+            set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
         }
         
-        if (player->weapon && check_collision(objects, -0.1f)) {
-            std::cout << "hit" << std::endl;
-            objects->m_is_active = false;
-        }
-        
-        for (int i = 0; i < object_count; ++i) {
-            if (objects[i].get_position().x < 10.0f) {
-                player->weapon->set_movement(glm::vec3(1.0f, 0.0f, 0.0f));
-            }
-        }
-        
+        if (m_position.x > 10.0f)
+            m_is_set = !m_is_set;
     }
+        
     
     if (m_entity_type == PLAYER && m_is_planted) {
         m_velocity.x = 0.0f;
@@ -177,35 +159,34 @@ void Entity::update(float delta_time, Entity* player, Entity* objects, int objec
         // We make two calls to our check_collision methods, one for the collidable objects and one for
         // the map.
         m_position.y += m_movement.y * m_speed * delta_time;
-        check_collision_y(objects, object_count);
+        check_collision_y(enemies, count);
 
         m_position.x += m_movement.x * m_speed * delta_time;
-        check_collision_x(objects, object_count);
+        check_collision_x(enemies, count);
     }
     
     check_collision_y(map);
     check_collision_x(map);
     
-    
     if (m_entity_type == ENEMY) {
         
-        ai_activate(planted_players);
+        ai_activate();
         
         if (player) {
-            if (m_position.x > 10.0f && player->m_is_planted)
-                m_position.y = player->m_position.y;
-        
             if (check_collision(player, -0.5f)) {
                 player->m_animation_indices = player->m_animations[player->HURT_RIGHT];
                 player->m_hit = true;
+                player->m_animation_indices = player->m_animations[player->IDLE_RIGHT];
             }
-        } 
-        else
-            m_position.y = -5.0;
+        }
+        
+        std::cout << m_position.x << std::endl;
+        if (m_position.x < -1.8f) {
+            std::cout << "crossed" << std::endl;
+            m_crossed = true;
+        }
     }
     
-    if (player && player->weapon->get_position().x > 10.0f) m_is_set = !m_is_set;
-
     if (m_is_jumping)
     {
         m_is_jumping = false;

@@ -17,23 +17,23 @@
 #include "Utility.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/mat4x4.hpp"
-#include <set>
 #include <vector>
 
 /**
     Notice that the game's state is now part of the Scene class, not the main file.
 */
+struct Menu {
+    Entity* first_screen;
+};
+
 struct GameState {
     // ————— GAME OBJECTS ————— //
     Map    *map;
-//    Map    *bg;
+    Map    *first_screen;
     std::vector<Entity*> players;
     std::vector<Entity*> enemies;
     Entity *objects;
     std::vector<Entity*> weapons;
-
-    // ————— POINTERS TO OTHER SCENES ————— //
-    int next_scene_id;
     
     int planted_players = 0;
     float countdown = 10.0f;
@@ -43,14 +43,18 @@ class Scene {
    public:
     // ————— ATTRIBUTES ————— //
     int m_number_of_enemies = 1;
+    int m_number_of_killed_enemies = 0;
+    int m_number_of_killed_players = 0;
+    bool m_enemy_crossed = false;
 
     GameState m_state;
+    Menu m_menu_state;
 
     // ————— METHODS ————— //
     virtual void initialise(Entity* player)                                = 0;
     virtual void update(float delta_time)                                  = 0;
     virtual void render(ShaderProgram *program)                            = 0;
-    virtual Entity* create_enemy(int y)                                  = 0;
+    virtual Entity* create_enemy()                                         = 0;
 
     // ————— GETTERS ————— //
     GameState const get_state() const { return m_state; }

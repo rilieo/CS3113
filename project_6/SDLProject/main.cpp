@@ -19,6 +19,7 @@
 #include "Utility.h"
 #include "Scene.h"
 #include "LevelA.h"
+//#include "LevelB.h"
 #include "MenuScreen.h"
 #include "Effects.h"
 
@@ -45,6 +46,7 @@ const float MILLISECONDS_IN_SECOND = 1000.0;
 Scene *g_current_scene;
 MenuScreen *g_menu_screen;
 LevelA *g_level_a;
+//LevelB *g_level_b;
 Mix_Music *g_bgm;
 Mix_Chunk *g_bark_sfx;
 Effects *g_effects;
@@ -101,7 +103,6 @@ Entity* create_player() {
     // WEAPON
     player->weapon = new Entity();
     player->weapon->set_entity_type(WEAPON);
-    player->weapon->set_position(glm::vec3(0.0f, 0.0f, 0.0f));
     player->weapon->set_movement(glm::vec3(0.0f));
     player->weapon->set_speed(1.5f);
     player->weapon->set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -156,13 +157,13 @@ void initialise()
 //    g_effects->start(FADEIN, 1.0f);
     
     // ————— Player SETUP ————— //
-    
     curr_player = create_player();
     
     // ————— LEVEL SETUP ————— //
     g_menu_screen = new MenuScreen();
     g_level_a = new LevelA();
-    switch_to_scene(g_level_a, curr_player);
+//    g_level_b = new LevelB();
+    switch_to_scene(g_menu_screen, NULL);
     
     /* BGM and SFX */
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
@@ -197,9 +198,10 @@ void process_input()
                         // Quit the game with a keystroke
                         g_game_is_running  = false;
                         break;
-                    case SDLK_RETURN: {
-                        g_current_scene->m_state.planted_players += 1;
-                        curr_player->m_is_planted = true;
+                    case SDLK_f: {
+                        if (curr_player->get_position().y < -1.67f) {
+                            curr_player->m_is_planted = true;
+                        }
                         break;
                     }
                     case SDLK_v: {
@@ -207,9 +209,10 @@ void process_input()
                         g_current_scene->m_state.players.push_back(new_player);
                         curr_player = new_player;
                         break;
+                    }    
+                    case SDLK_RETURN: {
+                        
                     }
-                    
-                    
             default:
                 break;
             }
@@ -290,6 +293,16 @@ void render()
 //    g_effects->render();
     g_current_scene->render(&g_shader_program);
     
+    if (g_current_scene->m_number_of_killed_players == g_current_scene->m_state.players.size() || g_current_scene->m_enemy_crossed) {
+        // switch to lose scene
+    }
+    
+    if (g_current_scene->m_number_of_killed_enemies == g_current_scene->m_state.enemies.size()) {
+        // switch to next scene
+        curr_player = create_player();
+//        switch_to_scene(g_level_b, curr_player);
+    }
+    
     SDL_GL_SwapWindow(g_display_window);
 }
 
@@ -299,6 +312,7 @@ void shutdown()
     
     // ————— DELETING LEVEL A DATA (i.e. map, character, enemies...) ————— //
     delete g_level_a;
+//    delete g_level_b;
     delete g_menu_screen;
 //    delete g_effects;
     Mix_FreeChunk(g_bark_sfx);

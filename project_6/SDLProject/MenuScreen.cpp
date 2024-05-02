@@ -13,12 +13,12 @@
 
 MenuScreen::~MenuScreen() {}
 
-Entity* MenuScreen::create_enemy(int y) { return NULL; }
+Entity* MenuScreen::create_enemy() { return NULL; }
 
 void MenuScreen::initialise(Entity* player)
 {
-    GLuint font_texture_id = Utility::load_texture("assets/fonts/font1.png");
-    texture_id = font_texture_id;
+    GLuint id = Utility::load_texture("assets/images/first.png");
+    texture_id = id;
 }
 
 void MenuScreen::update(float delta_time) {}
@@ -26,6 +26,6 @@ void MenuScreen::update(float delta_time) {}
 
 void MenuScreen::render(ShaderProgram *program)
 {
-    Utility::draw_text(program, texture_id, "Press Enter to Start", 0.8, -0.35, glm::vec3(0.7f, -3.8f, 0.0f));
+    Utility::render(program, texture_id);
     
 }

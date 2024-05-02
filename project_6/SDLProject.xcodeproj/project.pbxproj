@@ -18,7 +18,7 @@
 		9A8332BF2BB1328C00EB3EEB /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B672323DEEA007CECB1 /* SDL2_image.framework */; };
 		9A8332C42BB1328E00EB3EEB /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B662323DEEA007CECB1 /* SDL2.framework */; };
 		9A8332C62BB1334900EB3EEB /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B682323DEEA007CECB1 /* SDL2_mixer.framework */; };
-		9AB969412BE218F1007E1B79 /* Enemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AB969402BE218F1007E1B79 /* Enemy.cpp */; };
+		9AB969412BE218F1007E1B79 /* Bee.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AB969402BE218F1007E1B79 /* Bee.cpp */; };
 		9AB969432BE21901007E1B79 /* Weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AB969422BE21901007E1B79 /* Weapon.cpp */; };
 		9AB969452BE2190E007E1B79 /* Dog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AB969442BE2190E007E1B79 /* Dog.cpp */; };
 		9AD00FDC2BCA2CD100C2A283 /* Effects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */; };
@@ -58,10 +58,10 @@
 		9A5AE82A2BC3760C00151DD5 /* LevelA.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelA.h; sourceTree = "<group>"; };
 		9A5AE82E2BC3766000151DD5 /* MenuScreen.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MenuScreen.cpp; sourceTree = "<group>"; };
 		9A5AE8302BC3767200151DD5 /* MenuScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MenuScreen.h; sourceTree = "<group>"; };
-		9AB969402BE218F1007E1B79 /* Enemy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Enemy.cpp; sourceTree = "<group>"; };
+		9AB969402BE218F1007E1B79 /* Bee.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Bee.cpp; sourceTree = "<group>"; };
 		9AB969422BE21901007E1B79 /* Weapon.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Weapon.cpp; sourceTree = "<group>"; };
 		9AB969442BE2190E007E1B79 /* Dog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Dog.cpp; sourceTree = "<group>"; };
-		9AB969462BE2191B007E1B79 /* Enemy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Enemy.h; sourceTree = "<group>"; };
+		9AB969462BE2191B007E1B79 /* Bee.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bee.h; sourceTree = "<group>"; };
 		9AB969472BE21925007E1B79 /* Weapon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Weapon.h; sourceTree = "<group>"; };
 		9AB969482BE2192D007E1B79 /* Dog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dog.h; sourceTree = "<group>"; };
 		9AD00FDA2BCA2CB700C2A283 /* Effects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Effects.h; sourceTree = "<group>"; };
@@ -125,25 +125,25 @@
 				DBDF1B522323DE3F007CECB1 /* main.cpp */,
 				9A5AE82E2BC3766000151DD5 /* MenuScreen.cpp */,
 				9A5AE8302BC3767200151DD5 /* MenuScreen.h */,
-				9A5AE8252BC375B100151DD5 /* Scene.h */,
+				9A5AE8282BC3760100151DD5 /* LevelA.cpp */,
+				9A5AE82A2BC3760C00151DD5 /* LevelA.h */,
 				9A5AE8262BC375BE00151DD5 /* Scene.cpp */,
+				9A5AE8252BC375B100151DD5 /* Scene.h */,
 				9AD00FDA2BCA2CB700C2A283 /* Effects.h */,
 				9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */,
-				9A5AE8222BC3757600151DD5 /* Utility.cpp */,
-				9A5AE8242BC3758600151DD5 /* Utility.h */,
-				845C739C2846DACD000D6994 /* helper.cpp */,
-				9AB969402BE218F1007E1B79 /* Enemy.cpp */,
+				9AB969402BE218F1007E1B79 /* Bee.cpp */,
+				9AB969462BE2191B007E1B79 /* Bee.h */,
 				9AB969422BE21901007E1B79 /* Weapon.cpp */,
+				9AB969472BE21925007E1B79 /* Weapon.h */,
 				9AB969442BE2190E007E1B79 /* Dog.cpp */,
 				9AB969482BE2192D007E1B79 /* Dog.h */,
-				9AB969462BE2191B007E1B79 /* Enemy.h */,
-				9AB969472BE21925007E1B79 /* Weapon.h */,
 				8493D151286BFEC300217CD6 /* Entity.cpp */,
 				8493D152286BFEC300217CD6 /* Entity.h */,
 				8401114428864A3000A4D23F /* Map.cpp */,
-				9A5AE8282BC3760100151DD5 /* LevelA.cpp */,
-				9A5AE82A2BC3760C00151DD5 /* LevelA.h */,
 				8401114528864A3000A4D23F /* Map.h */,
+				9A5AE8222BC3757600151DD5 /* Utility.cpp */,
+				9A5AE8242BC3758600151DD5 /* Utility.h */,
+				845C739C2846DACD000D6994 /* helper.cpp */,
 			);
 			path = SDLProject;
 			sourceTree = "<group>";
@@ -226,7 +226,7 @@
 				9A5AE8292BC3760100151DD5 /* LevelA.cpp in Sources */,
 				DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */,
 				8493D153286BFEC300217CD6 /* Entity.cpp in Sources */,
-				9AB969412BE218F1007E1B79 /* Enemy.cpp in Sources */,
+				9AB969412BE218F1007E1B79 /* Bee.cpp in Sources */,
 				9AB969452BE2190E007E1B79 /* Dog.cpp in Sources */,
 				845C739D2846DACD000D6994 /* helper.cpp in Sources */,
 			);
