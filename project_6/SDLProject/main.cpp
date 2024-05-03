@@ -303,7 +303,7 @@ void render()
 //    g_effects->render();
     g_current_scene->render(&g_shader_program);
     
-    if (g_current_scene != g_menu_screen && (g_current_scene->m_number_of_killed_players == g_current_scene->m_state.players.size() || g_current_scene->m_enemy_crossed)) {
+    if (g_current_scene != g_menu_screen && g_current_scene->m_enemy_crossed) {
         // switch to lose scene
         glm::mat4 model_matrix = glm::mat4(1.0f);
         Utility::draw_object(&g_shader_program, model_matrix, g_lose_texture_id, glm::vec3(10.0f, 8.0f, 0.0f), glm::vec3(4.5f, -3.5f, 0.0f));
