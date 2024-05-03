@@ -3,7 +3,7 @@
 
 #define LEVEL_WIDTH 16
 #define LEVEL_HEIGHT 8
-#define ENEMY_COUNT 2
+#define ENEMY_COUNT 7
 #define DIALOGUE_COUNT 6
 
 signed int LEVELB_DATA[] =
@@ -43,9 +43,7 @@ LevelB::~LevelB()
 
 Entity* LevelB::create_enemy() {
     float ys[] = {-1.87f, -2.87f, -3.87f, -4.87f, -5.87f, -6.876};
-    float sizes[] = {0.3f, 0.7f, 0.9f};
     int random = rand() % 5;
-    int other_random = rand() % 3;
     Entity* enemy = new Entity();
     GLuint enemy_texture_id = Utility::load_texture("assets/images/enemy_bee_left.png");
     enemy->m_animations[enemy->ATTACK_LEFT] = new int[5] {0, 1, 2, 4, 5};
@@ -55,15 +53,15 @@ Entity* LevelB::create_enemy() {
     enemy->m_animation_time    = 0.0f;
     enemy->m_animation_cols    = 3;
     enemy->m_animation_rows    = 2;
-    enemy->set_height(sizes[other_random]);
-    enemy->set_width(sizes[other_random]);
+    enemy->set_height(0.8f);
+    enemy->set_width(0.8f);
     enemy->set_entity_type(ENEMY);
     enemy->set_ai_type(ZOMBIE);
     enemy->set_ai_state(WALKING);
     enemy->m_texture_id = enemy_texture_id;
     enemy->set_position(glm::vec3(11.0f, ys[random], 0.0f));
     enemy->set_movement(glm::vec3(0.0f));
-    enemy->set_speed(0.8f);
+    enemy->set_speed(0.85f);
     enemy->set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     return enemy;
 }
@@ -71,6 +69,7 @@ Entity* LevelB::create_enemy() {
 void LevelB::initialise(Entity* player)
 {
     m_number_of_enemies = ENEMY_COUNT;
+    m_state.dialogue_count = DIALOGUE_COUNT;
     m_state.players.push_back(player);
     GLuint map_texture_id = Utility::load_texture("assets/images/Grass.png");
 
@@ -126,7 +125,7 @@ void LevelB::update(float delta_time)
             deactivate(m_state.enemies, m_state.players, i, WEAPON);
             
             for (int j = 0; j < m_state.enemies.size(); j++) {
-                if (abs(m_state.players[i]->get_position().x - m_state.enemies[j]->get_position().x) < 2.0f)
+                if (abs(m_state.players[i]->get_position().x - m_state.enemies[j]->get_position().x) < 2.5f)
                     m_state.players[i]->weapon->deactivate();
             }
         }
@@ -135,7 +134,7 @@ void LevelB::update(float delta_time)
             m_state.enemies[i]->update(delta_time, NULL, NULL, 0, m_state.map);
             deactivate(m_state.enemies, m_state.players, i, PLAYER);
             
-            if (m_state.enemies[i]->get_active() && m_state.enemies[i]->m_crossed) m_enemy_crossed = true;
+            if (m_state.enemies[i]->get_active() && m_state.enemies[i]->m_crossed) { m_enemy_crossed = true; m_state.enemies[i]->deactivate(); }
         }
         
         if (m_state.countdown < 0.0f && m_state.enemies.size() != ENEMY_COUNT) {

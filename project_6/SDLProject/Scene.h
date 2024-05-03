@@ -31,10 +31,12 @@ struct GameState {
     std::vector<Entity*> players;
     std::vector<Entity*> enemies;
     Entity* objects;
+    Entity* temp_enemies;
     std::vector<Entity*> weapons;
     
     float countdown = 7.0f;
     int next_dialogue = 0;
+    int dialogue_count = 0;
     bool is_dialogue = true;
     
 };

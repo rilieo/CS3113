@@ -120,7 +120,7 @@ Entity* create_player() {
     player->weapon->m_animation_cols   = 2;
     player->weapon->m_animation_rows   = 2;
     player->weapon->set_height(0.8f);
-    player->weapon->set_width(0.8f);
+    player->weapon->set_width(0.5f);
     
     return player;
 }
@@ -158,9 +158,6 @@ void initialise()
     g_font_texture_id = Utility::load_texture("assets/fonts/font1.png");
     g_lose_texture_id = Utility::load_texture("assets/images/lose/lose.png");
     g_win1_texture_id = Utility::load_texture("assets/images/win/win_1.png");
-    
-//    g_effects = new Effects(g_projection_matrix, g_view_matrix);
-//    g_effects->start(FADEIN, 1.0f);
     
     // ————— Player SETUP ————— //
     curr_player = create_player();
@@ -221,7 +218,8 @@ void process_input()
                         if (g_current_scene == g_menu_screen) {
                             switch_to_scene(g_level_a, curr_player);
                         } else {
-                            Mix_PlayChannel(-1, g_bark_sfx, 0);
+                            if (g_current_scene->m_state.next_dialogue < g_current_scene->m_state.dialogue_count - 1)
+                                Mix_PlayChannel(-1, g_bark_sfx, 0);
                             g_current_scene->m_state.next_dialogue += 1;
                         }
                         break;
@@ -305,7 +303,7 @@ void render()
 //    g_effects->render();
     g_current_scene->render(&g_shader_program);
     
-    if (g_current_scene != g_menu_screen && g_current_scene->m_number_of_killed_players == g_current_scene->m_state.players.size() || g_current_scene->m_enemy_crossed) {
+    if (g_current_scene != g_menu_screen && (g_current_scene->m_number_of_killed_players == g_current_scene->m_state.players.size() || g_current_scene->m_enemy_crossed)) {
         // switch to lose scene
         glm::mat4 model_matrix = glm::mat4(1.0f);
         Utility::draw_object(&g_shader_program, model_matrix, g_lose_texture_id, glm::vec3(10.0f, 8.0f, 0.0f), glm::vec3(4.5f, -3.5f, 0.0f));

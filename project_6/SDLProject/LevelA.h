@@ -4,7 +4,6 @@
 class LevelA : public Scene {
 public:
     // ————— STATIC ATTRIBUTES ————— //
-    
     // ————— CONSTRUCTOR ————— //
     ~LevelA();
     

@@ -134,7 +134,9 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
     }
     
     if (m_entity_type == WEAPON) {
+        
         if (!m_is_set && player->m_is_planted) {
+            printf("updating");
             m_position = player->m_position;
             m_position.x += 1.0f;
             m_is_set = !m_is_set;
@@ -206,7 +208,7 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
         m_model_matrix = glm::scale(m_model_matrix, glm::vec3(10.0f, 9.0f, 0.0f));
     
     if (m_entity_type == BOSS)
-        m_model_matrix = glm::scale(m_model_matrix, glm::vec3(5.0f, 5.0f, 0.0f));
+        m_model_matrix = glm::scale(m_model_matrix, glm::vec3(6.0f, 6.0f, 0.0f));
 }
 
 void const Entity::check_collision_y(Entity* collidable_entities, int collidable_entity_count)
