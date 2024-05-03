@@ -62,6 +62,7 @@ GLuint g_font_texture_id,
         
 SDL_Window* g_display_window;
 bool g_game_is_running = true;
+bool g_is_start = true;
 
 ShaderProgram g_shader_program;
 glm::mat4 g_view_matrix, g_projection_matrix;
@@ -326,6 +327,8 @@ void render()
         }
         
     }
+    
+    
 
     SDL_GL_SwapWindow(g_display_window);
 }
@@ -339,8 +342,8 @@ void shutdown()
     delete g_level_b;
     delete g_menu_screen;
 //    delete g_effects;
-//    Mix_FreeChunk(g_bark_sfx);
-//    Mix_FreeMusic(g_bgm);
+    Mix_FreeChunk(g_bark_sfx);
+    Mix_FreeMusic(g_bgm);
 }
 
 // ————— GAME LOOP ————— //
