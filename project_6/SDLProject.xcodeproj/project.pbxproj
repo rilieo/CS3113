@@ -22,6 +22,8 @@
 		9AB969432BE21901007E1B79 /* Weapon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AB969422BE21901007E1B79 /* Weapon.cpp */; };
 		9AB969452BE2190E007E1B79 /* Dog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AB969442BE2190E007E1B79 /* Dog.cpp */; };
 		9AD00FDC2BCA2CD100C2A283 /* Effects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */; };
+		9AD501662BE49F1A0057FFA8 /* LevelB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AD501652BE49F1A0057FFA8 /* LevelB.cpp */; };
+		9AD501682BE4A4BF0057FFA8 /* LevelC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9AD501672BE4A4BF0057FFA8 /* LevelC.cpp */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -66,6 +68,10 @@
 		9AB969482BE2192D007E1B79 /* Dog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dog.h; sourceTree = "<group>"; };
 		9AD00FDA2BCA2CB700C2A283 /* Effects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Effects.h; sourceTree = "<group>"; };
 		9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Effects.cpp; sourceTree = "<group>"; };
+		9AD501642BE49F0F0057FFA8 /* LevelB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelB.h; sourceTree = "<group>"; };
+		9AD501652BE49F1A0057FFA8 /* LevelB.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LevelB.cpp; sourceTree = "<group>"; };
+		9AD501672BE4A4BF0057FFA8 /* LevelC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LevelC.cpp; sourceTree = "<group>"; };
+		9AD501692BE4A4C80057FFA8 /* LevelC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LevelC.h; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -128,6 +134,10 @@
 				9A5AE8282BC3760100151DD5 /* LevelA.cpp */,
 				9A5AE82A2BC3760C00151DD5 /* LevelA.h */,
 				9A5AE8262BC375BE00151DD5 /* Scene.cpp */,
+				9AD501642BE49F0F0057FFA8 /* LevelB.h */,
+				9AD501652BE49F1A0057FFA8 /* LevelB.cpp */,
+				9AD501672BE4A4BF0057FFA8 /* LevelC.cpp */,
+				9AD501692BE4A4C80057FFA8 /* LevelC.h */,
 				9A5AE8252BC375B100151DD5 /* Scene.h */,
 				9AD00FDA2BCA2CB700C2A283 /* Effects.h */,
 				9AD00FDB2BCA2CD100C2A283 /* Effects.cpp */,
@@ -219,6 +229,7 @@
 				9A5AE82F2BC3766000151DD5 /* MenuScreen.cpp in Sources */,
 				9AB969432BE21901007E1B79 /* Weapon.cpp in Sources */,
 				9A5AE8232BC3757600151DD5 /* Utility.cpp in Sources */,
+				9AD501662BE49F1A0057FFA8 /* LevelB.cpp in Sources */,
 				9A5AE8272BC375BE00151DD5 /* Scene.cpp in Sources */,
 				9AD00FDC2BCA2CD100C2A283 /* Effects.cpp in Sources */,
 				DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */,
@@ -229,6 +240,7 @@
 				9AB969412BE218F1007E1B79 /* Bee.cpp in Sources */,
 				9AB969452BE2190E007E1B79 /* Dog.cpp in Sources */,
 				845C739D2846DACD000D6994 /* helper.cpp in Sources */,
+				9AD501682BE4A4BF0057FFA8 /* LevelC.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

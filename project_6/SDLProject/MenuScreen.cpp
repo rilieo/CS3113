@@ -15,6 +15,8 @@ MenuScreen::~MenuScreen() {}
 
 Entity* MenuScreen::create_enemy() { return NULL; }
 
+void MenuScreen::reset() {}
+
 void MenuScreen::initialise(Entity* player)
 {
     m_menu.model_matrix = glm::mat4(1.0f);

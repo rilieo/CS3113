@@ -19,7 +19,8 @@
 #include "Utility.h"
 #include "Scene.h"
 #include "LevelA.h"
-//#include "LevelB.h"
+#include "LevelB.h"
+#include "LevelC.h"
 #include "MenuScreen.h"
 #include "Effects.h"
 
@@ -46,15 +47,18 @@ const float MILLISECONDS_IN_SECOND = 1000.0;
 Scene *g_current_scene;
 MenuScreen *g_menu_screen;
 LevelA *g_level_a;
-//LevelB *g_level_b;
+LevelB *g_level_b;
+LevelC *g_level_c;
 Mix_Music *g_bgm;
 Mix_Chunk *g_bark_sfx;
 Effects *g_effects;
 Entity* curr_player;
+Entity* message;
 
 int g_num_lives = 3;
 GLuint g_font_texture_id,
-       g_bg_texture_id;
+       g_lose_texture_id,
+       g_win1_texture_id;
         
 SDL_Window* g_display_window;
 bool g_game_is_running = true;
@@ -152,6 +156,8 @@ void initialise()
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
     
     g_font_texture_id = Utility::load_texture("assets/fonts/font1.png");
+    g_lose_texture_id = Utility::load_texture("assets/images/lose/lose.png");
+    g_win1_texture_id = Utility::load_texture("assets/images/win/win_1.png");
     
 //    g_effects = new Effects(g_projection_matrix, g_view_matrix);
 //    g_effects->start(FADEIN, 1.0f);
@@ -162,17 +168,18 @@ void initialise()
     // ————— LEVEL SETUP ————— //
     g_menu_screen = new MenuScreen();
     g_level_a = new LevelA();
-//    g_level_b = new LevelB();
+    g_level_b = new LevelB();
+    g_level_c = new LevelC();
     switch_to_scene(g_menu_screen, curr_player);
     
     /* BGM and SFX */
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     
-//    g_bgm = Mix_LoadMUS("assets/audio/k-k-slider.mp3");
-//    Mix_PlayMusic(g_bgm, -1);
-//    Mix_VolumeMusic(MIX_MAX_VOLUME / 16.0f);
+    g_bgm = Mix_LoadMUS("assets/audio/k-k-slider.mp3");
+    Mix_PlayMusic(g_bgm, -1);
+    Mix_VolumeMusic(MIX_MAX_VOLUME / 8.0f);
     
-//    g_bark_sfx = Mix_LoadWAV("assets/audio/single-husky-bark.wav");
+    g_bark_sfx = Mix_LoadWAV("assets/audio/single-husky-bark.wav");
     
     // ————— BLENDING ————— //
     glEnable(GL_BLEND);
@@ -214,6 +221,7 @@ void process_input()
                         if (g_current_scene == g_menu_screen) {
                             switch_to_scene(g_level_a, curr_player);
                         } else {
+                            Mix_PlayChannel(-1, g_bark_sfx, 0);
                             g_current_scene->m_state.next_dialogue += 1;
                         }
                         break;
@@ -274,7 +282,6 @@ void update()
         // ————— UPDATING THE SCENE (i.e. map, character, enemies...) ————— //
         
 //        if (g_current_scene != g_menu_screen) g_effects->update(FIXED_TIMESTEP);
-        
         g_current_scene->update(FIXED_TIMESTEP);
         
         delta_time -= FIXED_TIMESTEP;
@@ -298,16 +305,30 @@ void render()
 //    g_effects->render();
     g_current_scene->render(&g_shader_program);
     
-    if (g_current_scene->m_number_of_killed_players == g_current_scene->m_state.players.size() || g_current_scene->m_enemy_crossed) {
+    if (g_current_scene != g_menu_screen && g_current_scene->m_number_of_killed_players == g_current_scene->m_state.players.size() || g_current_scene->m_enemy_crossed) {
         // switch to lose scene
+        glm::mat4 model_matrix = glm::mat4(1.0f);
+        Utility::draw_object(&g_shader_program, model_matrix, g_lose_texture_id, glm::vec3(10.0f, 8.0f, 0.0f), glm::vec3(4.5f, -3.5f, 0.0f));
+        g_current_scene->reset();
     }
     
-    if (g_current_scene->m_number_of_killed_enemies == g_current_scene->m_state.enemies.size()) {
-        // switch to next scene
+    
+    if (g_current_scene != g_menu_screen && g_current_scene->m_number_of_killed_enemies == g_current_scene->m_number_of_enemies) {
+//         switch to next scene
         curr_player = create_player();
-//        switch_to_scene(g_level_b, curr_player);
+        if (g_current_scene == g_level_a) {
+            switch_to_scene(g_level_b, curr_player);
+        } else if (g_current_scene == g_level_b) {
+            switch_to_scene(g_level_c, curr_player);
+        }
+        else if (g_current_scene == g_level_c) {
+            glm::mat4 win_model_matrix = glm::mat4(1.0f);
+            Utility::draw_object(&g_shader_program, win_model_matrix, g_win1_texture_id, glm::vec3(10.0f, 8.0f, 0.0f), glm::vec3(4.5f, -3.5f, 0.0f));
+            g_current_scene->reset();
+        }
+        
     }
-    
+
     SDL_GL_SwapWindow(g_display_window);
 }
 
@@ -317,7 +338,7 @@ void shutdown()
     
     // ————— DELETING LEVEL DATA (i.e. map, character, enemies...) ————— //
     delete g_level_a;
-//    delete g_level_b;
+    delete g_level_b;
     delete g_menu_screen;
 //    delete g_effects;
 //    Mix_FreeChunk(g_bark_sfx);

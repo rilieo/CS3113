@@ -1,12 +1,12 @@
-#include "LevelA.h"
+#include "LevelB.h"
 #include "Utility.h"
 
 #define LEVEL_WIDTH 16
 #define LEVEL_HEIGHT 8
-#define ENEMY_COUNT 1
+#define ENEMY_COUNT 2
 #define DIALOGUE_COUNT 6
 
-signed int LEVELA_DATA[] =
+signed int LEVELB_DATA[] =
 {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -18,7 +18,7 @@ signed int LEVELA_DATA[] =
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
-LevelA::~LevelA()
+LevelB::~LevelB()
 {
     delete    m_state.map;
 
@@ -41,7 +41,7 @@ LevelA::~LevelA()
     delete[] m_state.objects;
 }
 
-Entity* LevelA::create_enemy() {
+Entity* LevelB::create_enemy() {
     float ys[] = {-1.87f, -2.87f, -3.87f, -4.87f, -5.87f, -6.876};
     float sizes[] = {0.3f, 0.7f, 0.9f};
     int random = rand() % 5;
@@ -63,46 +63,46 @@ Entity* LevelA::create_enemy() {
     enemy->m_texture_id = enemy_texture_id;
     enemy->set_position(glm::vec3(11.0f, ys[random], 0.0f));
     enemy->set_movement(glm::vec3(0.0f));
-    enemy->set_speed(0.5f);
+    enemy->set_speed(0.8f);
     enemy->set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     return enemy;
 }
 
-void LevelA::initialise(Entity* player)
+void LevelB::initialise(Entity* player)
 {
     m_number_of_enemies = ENEMY_COUNT;
     m_state.players.push_back(player);
     GLuint map_texture_id = Utility::load_texture("assets/images/Grass.png");
 
-    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELA_DATA, map_texture_id, 1.0f, 3, 1);
+    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELB_DATA, map_texture_id, 1.0f, 3, 1);
     
     m_state.objects = new Entity[DIALOGUE_COUNT];
-    m_state.objects[0].m_texture_id = Utility::load_texture("assets/images/dialogue/A/first.png");
+    m_state.objects[0].m_texture_id = Utility::load_texture("assets/images/dialogue/B/first.png");
     m_state.objects[0].set_entity_type(DIALOGUE);
     m_state.objects[0].set_position(glm::vec3(4.5f, -3.0f, 0.0f));
     m_state.objects[0].set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     
-    m_state.objects[1].m_texture_id = Utility::load_texture("assets/images/dialogue/A/second.png");
+    m_state.objects[1].m_texture_id = Utility::load_texture("assets/images/dialogue/B/second.png");
     m_state.objects[1].set_entity_type(DIALOGUE);
     m_state.objects[1].set_position(glm::vec3(4.5f, -3.0f, 0.0f));
     m_state.objects[1].set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     
-    m_state.objects[2].m_texture_id = Utility::load_texture("assets/images/dialogue/A/third.png");
+    m_state.objects[2].m_texture_id = Utility::load_texture("assets/images/dialogue/B/third.png");
     m_state.objects[2].set_entity_type(DIALOGUE);
     m_state.objects[2].set_position(glm::vec3(4.5f, -3.0f, 0.0f));
     m_state.objects[2].set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     
-    m_state.objects[3].m_texture_id = Utility::load_texture("assets/images/dialogue/A/fourth.png");
+    m_state.objects[3].m_texture_id = Utility::load_texture("assets/images/dialogue/B/fourth.png");
     m_state.objects[3].set_entity_type(DIALOGUE);
     m_state.objects[3].set_position(glm::vec3(4.5f, -3.0f, 0.0f));
     m_state.objects[3].set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     
-    m_state.objects[4].m_texture_id = Utility::load_texture("assets/images/dialogue/A/fifth.png");
+    m_state.objects[4].m_texture_id = Utility::load_texture("assets/images/dialogue/B/fifth.png");
     m_state.objects[4].set_entity_type(DIALOGUE);
-    m_state.objects[4].set_position(glm::vec3(4.5f, -3.0f, 0.0f));
+    m_state.objects[4].set_position(glm::vec3(4.5f, -4.0f, 0.0f));
     m_state.objects[4].set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
     
-    m_state.objects[5].m_texture_id = Utility::load_texture("assets/images/dialogue/A/sixth.png");
+    m_state.objects[5].m_texture_id = Utility::load_texture("assets/images/dialogue/B/sixth.png");
     m_state.objects[5].set_entity_type(DIALOGUE);
     m_state.objects[5].set_position(glm::vec3(4.5f, -3.0f, 0.0f));
     m_state.objects[5].set_acceleration(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -111,8 +111,9 @@ void LevelA::initialise(Entity* player)
     m_state.enemies.push_back(new_enemy);
 }
 
-void LevelA::update(float delta_time)
+void LevelB::update(float delta_time)
 {
+    
     if (m_state.next_dialogue > 5)
         m_state.is_dialogue = false;
     else
@@ -124,10 +125,10 @@ void LevelA::update(float delta_time)
             m_state.players[i]->weapon->update(delta_time, m_state.players[i], NULL, 0, m_state.map);
             deactivate(m_state.enemies, m_state.players, i, WEAPON);
             
-//            for (int j = 0; j < m_state.enemies.size(); j++) {
-//                if (abs(m_state.players[i]->get_position().x - m_state.enemies[j]->get_position().x) < 3.0f)
-//                    m_state.players[i]->weapon->deactivate();
-//            }
+            for (int j = 0; j < m_state.enemies.size(); j++) {
+                if (abs(m_state.players[i]->get_position().x - m_state.enemies[j]->get_position().x) < 2.0f)
+                    m_state.players[i]->weapon->deactivate();
+            }
         }
         
         for (int i = 0; i < m_state.enemies.size(); i++) {
@@ -148,13 +149,12 @@ void LevelA::update(float delta_time)
 }
 
 
-void LevelA::render(ShaderProgram *program)
+void LevelB::render(ShaderProgram *program)
 {
     m_state.map->render(program);
     
-    if (m_state.next_dialogue <= 5) {
+    if (m_state.next_dialogue <= 5)
         m_state.objects[m_state.next_dialogue].render(program);
-    }
     
     if (!m_state.is_dialogue) {
         for (size_t i=0; i < m_state.enemies.size(); ++i) {
@@ -162,7 +162,7 @@ void LevelA::render(ShaderProgram *program)
         }
         
         for (size_t i=0; i < m_state.players.size(); ++i) {
-                
+            
             m_state.players[i]->render(program);
             
             if (m_state.players[i]->m_is_planted)
@@ -171,7 +171,7 @@ void LevelA::render(ShaderProgram *program)
     }
 }
 
-void LevelA::deactivate(std::vector<Entity*>& enemies, std::vector<Entity*>& players, int index, EntityType entity_collide) {
+void LevelB::deactivate(std::vector<Entity*>& enemies, std::vector<Entity*>& players, int index, EntityType entity_collide) {
     
     if (entity_collide == WEAPON)
         for (int i = 0; i < enemies.size(); i++) {
@@ -203,7 +203,7 @@ void LevelA::deactivate(std::vector<Entity*>& enemies, std::vector<Entity*>& pla
 
 }
 
-void LevelA::reset() {
+void LevelB::reset() {
     for (int i = 0; i < m_state.players.size(); i++) {
         if (m_state.players[i]->get_active()) {
             m_state.players[i]->set_movement(glm::vec3(0.0f, 0.0f, 0.0f));

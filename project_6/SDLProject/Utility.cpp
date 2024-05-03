@@ -103,3 +103,28 @@ void Utility::draw_text(ShaderProgram *program, GLuint font_texture_id, std::str
     glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
 }
 
+void Utility::draw_object(ShaderProgram *program, glm::mat4 &object_model_matrix, GLuint &object_texture_id, glm::vec3 scale, glm::vec3 translate) {
+    
+    object_model_matrix = glm::mat4(1.0f);
+    object_model_matrix = glm::translate(object_model_matrix, translate);
+    object_model_matrix = glm::scale(object_model_matrix, scale);
+
+    program->set_model_matrix(object_model_matrix);
+
+    float vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
+    float tex_coords[] = { 0.0,  1.0, 1.0,  1.0, 1.0, 0.0,  0.0,  1.0, 1.0, 0.0,  0.0, 0.0 };
+
+    glBindTexture(GL_TEXTURE_2D, object_texture_id);
+
+    glVertexAttribPointer(program->get_position_attribute(), 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->get_position_attribute());
+    glVertexAttribPointer(program->get_tex_coordinate_attribute(), 2, GL_FLOAT, false, 0, tex_coords);
+    glEnableVertexAttribArray(program->get_tex_coordinate_attribute());
+
+    program->set_model_matrix(object_model_matrix);
+    glBindTexture(GL_TEXTURE_2D, object_texture_id);
+    glDrawArrays(GL_TRIANGLES, 0, 6); // we are now drawing 2 triangles, so we use 6 instead of 3
+
+    glDisableVertexAttribArray(program->get_position_attribute());
+    glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
+}

@@ -1,12 +1,13 @@
 #include "Scene.h"
 #include <vector>
 
-class LevelA : public Scene {
+class LevelC : public Scene {
 public:
     // ————— STATIC ATTRIBUTES ————— //
+    int ENEMY_COUNT = 1;
     
     // ————— CONSTRUCTOR ————— //
-    ~LevelA();
+    ~LevelC();
     
     // ————— METHODS ————— //
 //    void initialise(Entity* player) override;

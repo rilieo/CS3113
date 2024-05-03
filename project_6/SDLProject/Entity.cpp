@@ -12,11 +12,13 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 #include "Entity.h"
+#include <cmath>
 
 Entity::Entity()
 {
     // ––––– PHYSICS ––––– //
-    m_position = glm::vec3(0.0f);
+    m_position = glm::vec3(11.0f, 0.0f, 0.0f);
+    printf("Current position x: %f\n", m_position.x);
     m_velocity = glm::vec3(0.0f);
     m_acceleration = glm::vec3(0.0f);
 
@@ -24,6 +26,7 @@ Entity::Entity()
     m_movement = glm::vec3(0.0f);
     m_speed = 0;
     m_model_matrix = glm::mat4(1.0f);
+    activate();
 }
 
 Entity::~Entity()
@@ -96,7 +99,7 @@ void Entity::ai_zombie()
             m_movement = glm::vec3(0.0f, 0.0f, 0.0f);
         }
     }
-        break;
+    break;
 
     default:
         break;
@@ -113,7 +116,7 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
     m_collided_left = false;
     m_collided_right = false;
 
-    if ((m_entity_type == ENEMY || (m_entity_type == PLAYER && m_is_planted)) && m_animation_indices != NULL)
+    if ((m_entity_type == ENEMY || (m_entity_type == BOSS) || (m_entity_type == PLAYER && m_is_planted)) && m_animation_indices != NULL)
     {
         m_animation_time += delta_time;
         float frames_per_second = (float)1 / SECONDS_PER_FRAME;
@@ -140,12 +143,24 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
         
         if (m_position.x > 10.0f)
             m_is_set = !m_is_set;
+        
     }
         
-    
     if (m_entity_type == PLAYER && m_is_planted) {
         m_velocity.x = 0.0f;
         m_velocity.y = 0.0f;
+    } else if (m_entity_type == BOSS) {
+        m_velocity.x = m_movement.x * m_speed;
+        
+        m_velocity.y = sin(m_position.x * m_position.x);
+        
+        // We make two calls to our check_collision methods, one for the collidable objects and one for
+        // the map.
+        m_position.y += m_velocity.y * m_speed * delta_time;
+        check_collision_y(enemies, count);
+
+        m_position.x += m_movement.x * m_speed * delta_time;
+        check_collision_x(enemies, count);
     }
     else {
         m_velocity.x = m_movement.x * m_speed;
@@ -166,12 +181,12 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
     check_collision_y(map);
     check_collision_x(map);
     
-    if (m_entity_type == ENEMY) {
+    if (m_entity_type == ENEMY || m_entity_type == BOSS) {
         
         ai_activate();
         
-        std::cout << m_position.x << std::endl;
-        if (m_position.x < -1.8f) {
+//        std::cout << m_position.x << std::endl;
+        if (m_position.x < -1.2f) {
             std::cout << "crossed" << std::endl;
             m_crossed = true;
         }
@@ -189,6 +204,9 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
     
     if (m_entity_type == DIALOGUE)
         m_model_matrix = glm::scale(m_model_matrix, glm::vec3(10.0f, 9.0f, 0.0f));
+    
+    if (m_entity_type == BOSS)
+        m_model_matrix = glm::scale(m_model_matrix, glm::vec3(5.0f, 5.0f, 0.0f));
 }
 
 void const Entity::check_collision_y(Entity* collidable_entities, int collidable_entity_count)
@@ -358,7 +376,7 @@ bool const Entity::check_collision(Entity* other, float extra) const
     if (!m_is_active || !other->m_is_active) return false;
 
     float x_distance = fabs(m_position.x - other->m_position.x) - ((m_width + other->m_width - extra) / 2.0f);
-//    float y_distance = fabs(m_position.y - other->m_position.y) - ((m_height + other->m_height - extra) / 2.0f);
+    float y_distance = fabs(m_position.y - other->m_position.y) - ((m_height + other->m_height - extra) / 2.0f);
 
-    return x_distance < 0.0f;
+    return x_distance < 0.0f && y_distance < 0.0f;
 }

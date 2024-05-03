@@ -36,6 +36,7 @@ struct GameState {
     float countdown = 7.0f;
     int next_dialogue = 0;
     bool is_dialogue = true;
+    
 };
 
 class Scene {
@@ -48,12 +49,14 @@ class Scene {
 
     GameState m_state;
     Menu m_menu;
+    Mix_Chunk *g_bark_sfx;
 
     // ————— METHODS ————— //
     virtual void initialise(Entity* player)                                = 0;
     virtual void update(float delta_time)                                  = 0;
     virtual void render(ShaderProgram *program)                            = 0;
     virtual Entity* create_enemy()                                         = 0;
+    virtual void reset()                                                   = 0;
 
     // ————— GETTERS ————— //
     GameState const get_state() const { return m_state; }

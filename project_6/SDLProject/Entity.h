@@ -1,13 +1,13 @@
 #include "Map.h"
 
-enum EntityType { PLAYER, ENEMY, WEAPON, DIALOGUE, MENU_SCREEN   };
+enum EntityType { PLAYER, ENEMY, WEAPON, DIALOGUE, BOSS   };
 enum AIType     { ZOMBIE };
 enum AIState    { WALKING, IDLE  };
 
 class Entity
 {
 private:
-    bool m_is_active = true;
+    bool m_is_active = false;
 
     // ––––– ANIMATION ––––– //
     int* m_animation_idle_right = NULL,  // idle
@@ -17,7 +17,7 @@ private:
        * m_animation_hurt_left = NULL; // attack to the left
     
     // ––––– PHYSICS (GRAVITY) ––––– //
-    glm::vec3 m_position;
+    glm::vec3 m_position = glm::vec3(11.0f, 0.0f, 0.0f);
     glm::vec3 m_velocity;
     glm::vec3 m_acceleration;
 
@@ -124,6 +124,7 @@ public:
     float      const get_speed()          const { return m_speed;           };
     int        const get_width()          const { return m_width;           };
     int        const get_height()         const { return m_height;          };
+    bool       const get_active()         const { return m_is_active;       };
 
     // ————— SETTERS ————— //
     void const set_entity_type(EntityType new_entity_type)  { m_entity_type = new_entity_type;      };
@@ -138,4 +139,5 @@ public:
     void const set_width(float new_width)                   { m_width = new_width;                  };
     void const set_height(float new_height)                 { m_height = new_height;                };
     void const set_scale(glm::vec3 new_scale)               { m_model_matrix = glm::scale(m_model_matrix, new_scale);                };
+    void const set_num_hits(int hits)                       { m_num_hits = hits;                     };
 };
