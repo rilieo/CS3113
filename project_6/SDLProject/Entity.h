@@ -1,6 +1,6 @@
 #include "Map.h"
 
-enum EntityType { PLATFORM, PLAYER, ENEMY, WEAPON   };
+enum EntityType { PLAYER, ENEMY, WEAPON, DIALOGUE, MENU_SCREEN   };
 enum AIType     { ZOMBIE };
 enum AIState    { WALKING, IDLE  };
 

@@ -13,8 +13,6 @@
 #include "ShaderProgram.h"
 #include "Entity.h"
 
-bool g_is_set = false;
-
 Entity::Entity()
 {
     // ––––– PHYSICS ––––– //
@@ -172,14 +170,6 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
         
         ai_activate();
         
-        if (player) {
-            if (check_collision(player, -0.5f)) {
-                player->m_animation_indices = player->m_animations[player->HURT_RIGHT];
-                player->m_hit = true;
-                player->m_animation_indices = player->m_animations[player->IDLE_RIGHT];
-            }
-        }
-        
         std::cout << m_position.x << std::endl;
         if (m_position.x < -1.8f) {
             std::cout << "crossed" << std::endl;
@@ -196,6 +186,9 @@ void Entity::update(float delta_time, Entity* player, Entity* enemies, int count
 
     m_model_matrix = glm::mat4(1.0f);
     m_model_matrix = glm::translate(m_model_matrix, m_position);
+    
+    if (m_entity_type == DIALOGUE)
+        m_model_matrix = glm::scale(m_model_matrix, glm::vec3(10.0f, 9.0f, 0.0f));
 }
 
 void const Entity::check_collision_y(Entity* collidable_entities, int collidable_entity_count)
@@ -365,7 +358,7 @@ bool const Entity::check_collision(Entity* other, float extra) const
     if (!m_is_active || !other->m_is_active) return false;
 
     float x_distance = fabs(m_position.x - other->m_position.x) - ((m_width + other->m_width - extra) / 2.0f);
-    float y_distance = fabs(m_position.y - other->m_position.y) - ((m_height + other->m_height - extra) / 2.0f);
+//    float y_distance = fabs(m_position.y - other->m_position.y) - ((m_height + other->m_height - extra) / 2.0f);
 
-    return x_distance < 0.0f && y_distance < 0.0f;
+    return x_distance < 0.0f;
 }

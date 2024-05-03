@@ -163,16 +163,16 @@ void initialise()
     g_menu_screen = new MenuScreen();
     g_level_a = new LevelA();
 //    g_level_b = new LevelB();
-    switch_to_scene(g_menu_screen, NULL);
+    switch_to_scene(g_menu_screen, curr_player);
     
     /* BGM and SFX */
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     
-    g_bgm = Mix_LoadMUS("assets/audio/k-k-slider.mp3");
-    Mix_PlayMusic(g_bgm, -1);
-    Mix_VolumeMusic(MIX_MAX_VOLUME / 16.0f);
+//    g_bgm = Mix_LoadMUS("assets/audio/k-k-slider.mp3");
+//    Mix_PlayMusic(g_bgm, -1);
+//    Mix_VolumeMusic(MIX_MAX_VOLUME / 16.0f);
     
-    g_bark_sfx = Mix_LoadWAV("assets/audio/single-husky-bark.wav");
+//    g_bark_sfx = Mix_LoadWAV("assets/audio/single-husky-bark.wav");
     
     // ————— BLENDING ————— //
     glEnable(GL_BLEND);
@@ -211,7 +211,12 @@ void process_input()
                         break;
                     }    
                     case SDLK_RETURN: {
-                        
+                        if (g_current_scene == g_menu_screen) {
+                            switch_to_scene(g_level_a, curr_player);
+                        } else {
+                            g_current_scene->m_state.next_dialogue += 1;
+                        }
+                        break;
                     }
             default:
                 break;
@@ -310,13 +315,13 @@ void shutdown()
 {
     SDL_Quit();
     
-    // ————— DELETING LEVEL A DATA (i.e. map, character, enemies...) ————— //
+    // ————— DELETING LEVEL DATA (i.e. map, character, enemies...) ————— //
     delete g_level_a;
 //    delete g_level_b;
     delete g_menu_screen;
 //    delete g_effects;
-    Mix_FreeChunk(g_bark_sfx);
-    Mix_FreeMusic(g_bgm);
+//    Mix_FreeChunk(g_bark_sfx);
+//    Mix_FreeMusic(g_bgm);
 }
 
 // ————— GAME LOOP ————— //

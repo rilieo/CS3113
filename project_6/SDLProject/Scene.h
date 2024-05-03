@@ -19,24 +19,23 @@
 #include "glm/mat4x4.hpp"
 #include <vector>
 
-/**
-    Notice that the game's state is now part of the Scene class, not the main file.
-*/
 struct Menu {
-    Entity* first_screen;
+    glm::mat4 model_matrix;
+    GLuint texture_id;
 };
 
 struct GameState {
     // ————— GAME OBJECTS ————— //
-    Map    *map;
-    Map    *first_screen;
+    Map* map;
+    Map* first_screen;
     std::vector<Entity*> players;
     std::vector<Entity*> enemies;
-    Entity *objects;
+    Entity* objects;
     std::vector<Entity*> weapons;
     
-    int planted_players = 0;
-    float countdown = 10.0f;
+    float countdown = 7.0f;
+    int next_dialogue = 0;
+    bool is_dialogue = true;
 };
 
 class Scene {
@@ -48,7 +47,7 @@ class Scene {
     bool m_enemy_crossed = false;
 
     GameState m_state;
-    Menu m_menu_state;
+    Menu m_menu;
 
     // ————— METHODS ————— //
     virtual void initialise(Entity* player)                                = 0;
